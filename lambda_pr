@@ -1,0 +1,15 @@
+def greetuser(func,str1):
+    str2=func(str1)
+    print("Hello Welcome " + str2)
+
+def ucasepr(str1):
+    str2=str1.upper()
+    return str2
+
+
+str3=ucasepr("Prashant")
+print(str3)
+
+greetuser(ucasepr,"Prashant")
+
+greetuser(lambda i: i.upper(),"Vinod")
