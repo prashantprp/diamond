@@ -1,0 +1,326 @@
+select 'AHS_HR_ORG_NUM', 
+
+              CASE WHEN instr((SELECT    LTRIM(SYS_CONNECT_BY_PATH(responsibility_name, ';'), ';')
+                                    FROM (SELECT user_name,
+                            responsibility_name,
+             row_number() over(order by responsibility_name) rownumber,
+             count(*) over () cnt
+        FROM (SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_DIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_DIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_DIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_DIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER')
+                    UNION
+                    SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_INDIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_INDIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_INDIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_INDIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER'))) data
+    WHERE rownumber = cnt
+    START WITH rownumber = 1
+    CONNECT BY PRIOR rownumber = rownumber - 1),'MR_HR_AHS_DATA') > 0 THEN 'CHRBU'  ELSE 'OTHER' END AS AHS_HR_ORG FROM DUAL
+
+UNION 
+
+select 'AHS_HR_ORG_NUM', 
+
+              CASE WHEN instr((SELECT    LTRIM(SYS_CONNECT_BY_PATH(responsibility_name, ';'), ';')
+                                    FROM (SELECT user_name,
+                            responsibility_name,
+             row_number() over(order by responsibility_name) rownumber,
+             count(*) over () cnt
+        FROM (SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_DIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_DIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_DIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_DIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER')
+                    UNION
+                    SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_INDIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_INDIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_INDIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_INDIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER'))) data
+    WHERE rownumber = cnt
+    START WITH rownumber = 1
+    CONNECT BY PRIOR rownumber = rownumber - 1),'MR_HR_AHS_DATA') > 0 THEN 'CHRBU,COVHE'  ELSE 'OTHER' END AS AHS_HR_ORG FROM DUAL
+
+UNION 
+
+select 'AHS_HR_ORG_NUM', 
+
+              CASE WHEN instr((SELECT    LTRIM(SYS_CONNECT_BY_PATH(responsibility_name, ';'), ';')
+                                    FROM (SELECT user_name,
+                            responsibility_name,
+             row_number() over(order by responsibility_name) rownumber,
+             count(*) over () cnt
+        FROM (SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_DIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_DIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_DIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_DIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER')
+                    UNION
+                    SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_INDIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_INDIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_INDIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_INDIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER'))) data
+    WHERE rownumber = cnt
+    START WITH rownumber = 1
+    CONNECT BY PRIOR rownumber = rownumber - 1),'MR_HR_AHS_DATA') > 0 THEN 'CHRBU,CWEST'  ELSE 'OTHER' END AS AHS_HR_ORG FROM DUAL
+
+UNION 
+select 'AHS_HR_ORG_NUM', 
+
+              CASE WHEN instr((SELECT    LTRIM(SYS_CONNECT_BY_PATH(responsibility_name, ';'), ';')
+                                    FROM (SELECT user_name,
+                            responsibility_name,
+             row_number() over(order by responsibility_name) rownumber,
+             count(*) over () cnt
+        FROM (SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_DIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_DIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_DIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_DIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER')
+                    UNION
+                    SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_INDIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_INDIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_INDIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_INDIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER'))) data
+    WHERE rownumber = cnt
+    START WITH rownumber = 1
+    CONNECT BY PRIOR rownumber = rownumber - 1),'MR_HR_AHS_DATA') > 0 THEN 'CHRBU,LABCO'  ELSE 'OTHER' END AS AHS_HR_ORG FROM DUAL
+
+UNION 
+
+select 'AHS_HR_ORG_NUM', 
+
+              CASE WHEN instr((SELECT    LTRIM(SYS_CONNECT_BY_PATH(responsibility_name, ';'), ';')
+                                    FROM (SELECT user_name,
+                            responsibility_name,
+             row_number() over(order by responsibility_name) rownumber,
+             count(*) over () cnt
+        FROM (SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_DIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_DIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_DIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_DIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER')
+                    UNION
+                    SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_INDIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_INDIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_INDIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_INDIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER'))) data
+    WHERE rownumber = cnt
+    START WITH rownumber = 1
+    CONNECT BY PRIOR rownumber = rownumber - 1),'MR_HR_AHS_DATA') > 0 THEN 'CHRBU,COVHE,CWEST'  ELSE 'OTHER' END AS AHS_HR_ORG FROM DUAL
+
+UNION 
+select 'AHS_HR_ORG_NUM', 
+
+              CASE WHEN instr((SELECT    LTRIM(SYS_CONNECT_BY_PATH(responsibility_name, ';'), ';')
+                                    FROM (SELECT user_name,
+                            responsibility_name,
+             row_number() over(order by responsibility_name) rownumber,
+             count(*) over () cnt
+        FROM (SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_DIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_DIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_DIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_DIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER')
+                    UNION
+                    SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_INDIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_INDIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_INDIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_INDIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER'))) data
+    WHERE rownumber = cnt
+    START WITH rownumber = 1
+    CONNECT BY PRIOR rownumber = rownumber - 1),'MR_HR_AHS_DATA') > 0 THEN 'CHRBU,COVHE,LABCO'  ELSE 'OTHER' END AS AHS_HR_ORG FROM DUAL
+
+UNION 
+select 'AHS_HR_ORG_NUM', 
+
+              CASE WHEN instr((SELECT    LTRIM(SYS_CONNECT_BY_PATH(responsibility_name, ';'), ';')
+                                    FROM (SELECT user_name,
+                            responsibility_name,
+             row_number() over(order by responsibility_name) rownumber,
+             count(*) over () cnt
+        FROM (SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_DIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_DIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_DIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_DIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER')
+                    UNION
+                    SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_INDIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_INDIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_INDIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_INDIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER'))) data
+    WHERE rownumber = cnt
+    START WITH rownumber = 1
+    CONNECT BY PRIOR rownumber = rownumber - 1),'MR_HR_AHS_DATA') > 0 THEN 'CHRBU,CWEST,LABCO'  ELSE 'OTHER' END AS AHS_HR_ORG FROM DUAL
+
+UNION 
+
+select 'AHS_HR_ORG_NUM', 
+
+              CASE WHEN instr((SELECT    LTRIM(SYS_CONNECT_BY_PATH(responsibility_name, ';'), ';')
+                                    FROM (SELECT user_name,
+                            responsibility_name,
+             row_number() over(order by responsibility_name) rownumber,
+             count(*) over () cnt
+        FROM (SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_DIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_DIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_DIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_DIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER')
+                    UNION
+                    SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_INDIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_INDIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_INDIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_INDIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER'))) data
+    WHERE rownumber = cnt
+    START WITH rownumber = 1
+    CONNECT BY PRIOR rownumber = rownumber - 1),'MR_HR_AHS_DATA') > 0 THEN 'CHRBU,COVHE,CWEST,LABCO'  ELSE 'OTHER' END AS AHS_HR_ORG FROM DUAL
+
+UNION
+
+select 'AHS_HR_ORG_NUM', 
+
+              CASE WHEN instr((SELECT    LTRIM(SYS_CONNECT_BY_PATH(responsibility_name, ';'), ';')
+                                    FROM (SELECT user_name,
+                            responsibility_name,
+             row_number() over(order by responsibility_name) rownumber,
+             count(*) over () cnt
+        FROM (SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_DIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_DIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_DIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_DIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER')
+                    UNION
+                    SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_INDIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_INDIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_INDIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_INDIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( ':USER'))) data
+    WHERE rownumber = cnt
+    START WITH rownumber = 1
+    CONNECT BY PRIOR rownumber = rownumber - 1),'MR_HR_COV_DATA') > 0 THEN 'COVHE'   ELSE 'OTHER' END AS AHS_HR_ORG FROM DUAL
+        UNION 
+select 'AHS_HR_ORG_NUM', CASE WHEN UPPER(':USER') = 'MRADMIN' THEN 'CHRBU'   ELSE 'OTHER' END AS AHS_HR_ORG FROM DUAL
+        UNION 
+select 'AHS_HR_ORG_NUM', CASE WHEN UPPER(':USER') = 'MRADMIN' THEN 'COVHE'   ELSE 'OTHER' END AS AHS_HR_ORG FROM DUAL
+		UNION 
+select 'AHS_HR_ORG_NUM', CASE WHEN UPPER(':USER') = 'MRADMIN' THEN 'LABCO'   ELSE 'OTHER' END AS AHS_HR_ORG FROM DUAL
+		UNION 
+select 'AHS_HR_ORG_NUM', CASE WHEN UPPER(':USER') = 'MRADMIN' THEN 'CWEST'   ELSE 'OTHER' END AS AHS_HR_ORG FROM DUAL
