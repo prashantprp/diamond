@@ -1,0 +1,1298 @@
+ALTER SESSION SET NLS_DATE_FORMAT= "DD-MON-YYYY HH24:MI:SS"
+alter session set current_schema=AHS_BAW
+
+ahs_mr_admin
+mrAdmin4BI
+
+PASSWORDS
+FINDEV-PRASHANTPATIYANRAJENDRAN-Welcome123
+MRDWDEV-PRASHANTPATIYANRAJEN-welcome2mr
+wsemgretl01d 	--prashantpatiyanraj.z	-- 	DEV DAC,Informatica
+wsemgretl01t 	--	prashantpatiyanraj.z	--	Test DAC,Informatica
+wsemgretl01	--	  
+wsemgrapp01d --	prashantpatiyanraj.z
+wsemgrapp01t --	prashantpatiyanraj.z
+https://oem12c.ahs.ca/em -- PRASHANTRAYENDRAN - Wabasso1234!
+
+cdi_team :- cdi_team
+
+uxmrapp01t
+
+DAC-prashantpatiyanrajen-welcome2mr
+
+http://mrbiprd.albertahealthservic
+es.ca:33004/analytics/saw.dll?bieehome -- Production URL--mradmin-welcome2
+http://mrbitst.albertahealthservices.ca:31004/analytics/saw.dll?bieehome&startPage=1  
+http://mrbitrn.albertahealthservices.ca:32004/analytics/saw.dll?BIEEHome&startPage=1  
+http://mrbidev.albertahealthservices.ca:30004/analytics/saw.dll?BIEEHome  
+http://mrbildt.albertahealthservices.ca:35004/analytics/saw.dll?bieehome
+http://findevweb.albertahealthservices.ca:10715/OA_HTML/AppsLogin -- EBS login
+username=mradmin
+password=welcome2
+
+
+
+
+
+Informatica/DAC DEV: wsemgretl01d 
+Informatica/DAC TEST: wsemgretl01t 
+RPD DEV: wsemgrapp01d 
+RPD TST: wsemgrapp01t 
+
+FINPRD--PRASHANTPATIYANRAJENDRAN-Deve10per
+
+
+vFire: http://insite.albertahealthservices.ca/9424.asp   – This is our source for end user help desk tickets for eManager 
+JIRA: http://compcars.crha-health.ab.ca:8080/secure/Dashboard.jspa  - Our tracking tool for project work Help Desk – 
+For all computer related problems. Anything you report will go through the vFire tool above. Email: ServiceDesk.EDM@ahs.ca Phone: 780-735-4357 
+Insite page: http://insite.albertahealthservices.ca/974.asp 
+
+ePeople: 01156286 - You can log into ePeople to update all your personal information with HR, get pay information, and other HR information.  
+
+PPM: https://ahsppm.albertahealthservices.ca/niku/nu#action:homeActionId – This is where we log our time for the week.
+
+File Storage Drive: This is where most of our external files end up  \\chfs.capitalhealth.ca\CDI_ftp$\ 
+
+
+===============QUERY FOR EXPLAIN PLAN======================================================================================================================================
+
+explain plan set statement_id='tst' for select sysdate from dual;
+
+SELECT PLAN_TABLE_OUTPUT FROM TABLE(DBMS_XPLAN.DISPLAY('PLAN_TABLE', 'tst','TYPICAL'));
+
+===============QUERY FOR EXPLAIN PLAN======================================================================================================================================
+
+===============QUERY FOR TS SPACE USAGE======================================================================================================================================
+
+SELECT
+    df.tablespace_name "Tablespace",
+    totalusedspace "Used MB",
+    ( df.totalspace - tu.totalusedspace ) "Free MB",
+    df.totalspace "Total MB",
+    round(100 * ( (df.totalspace - tu.totalusedspace) / df.totalspace) ) "Pct. Free"
+FROM
+    (
+        SELECT
+            tablespace_name,
+            round(SUM(bytes) / 1048576) totalspace
+        FROM
+            dba_data_files
+        GROUP BY
+            tablespace_name
+    ) df,
+    (
+        SELECT
+            round(SUM(bytes) / (1024 * 1024) ) totalusedspace,
+            tablespace_name
+        FROM
+            dba_segments
+        GROUP BY
+            tablespace_name
+    ) tu
+WHERE
+    df.tablespace_name = tu.tablespace_name;
+
+===============QUERY FOR TS SPACE USAGE======================================================================================================================================
+
+
+===============QUERY FOR TS SPACE USAGE======================================================================================================================================
+
+
+SELECT tablespace_size/1024/1024/1024,allocated_space/1024/1024/1024,free_space/1024/1024/1024
+FROM   dba_temp_free_space    
+
+
+===============QUERY FOR ODI Error Run======================================================================================================================================
+
+SELECT
+    sls.i_lp_step,
+    sls.lp_step_name,
+    slsl.status,
+    to_char(slsl.end_date,'DD-MM-YYYY HH24:MI:SS'),
+    slsl.error_message    
+    FROM
+    snp_lpi_step sls,
+    snp_lpi_step_log slsl
+WHERE
+        sls.i_lp_inst = 8500
+    AND
+        sls.i_lp_step = slsl.i_lp_step and status ='E' order by sls.i_lp_step desc 
+
+===============QUERY FOR ODI Error Run======================================================================================================================================        
+
+
+===============QUERY FOR Dead Lock======================================================================================================================================        
+
+SELECT
+    do.object_name,
+    lo.session_id,
+    DECODE(
+        lo.locked_mode,
+        0,
+        'Lock Requested and Waiting currently no Lock',
+        2,
+        'Row share lock',
+        3,
+        'Row Xclusive',
+        4,
+        'Share Table Lock',
+        5,
+        'Share Row Exclusive Table Lock',
+        6,
+        'Exclusive'
+    )
+FROM
+    dba_objects do,
+    v$locked_object lo
+WHERE
+    do.object_id = lo.object_id
+ORDER BY do.object_name,session_id
+
+===============QUERY FOR Dead Lock======================================================================================================================================         
+
+
+===============Get SQL and GENERATE SQL PLAN======================================================================================================================================
+
+select * from dba_hist_sqlStat order by elapsed_time_Total desc 
+select * from table(dbms_xplan.display_awr('5u4zkdacuthf6'));
+
+===============Get SQL and GENERATE SQL PLAN======================================================================================================================================
+
+
+
+wsemgretl01d 
+wsemgretl01t 
+wsemgrapp01d 
+wsemgrapp01t 
+
+
+select plan_table_output from table (dbms_xplan.display_awr('&sqlid'));
+
+
+
+
+select plan_table_output from table (dbms_xplan.display_awr('&sqlid'));
+
+
+
+https://ahsppm.albertahealthservices.ca 
+
+
+
+http://findevweb.albertahealthservices.ca:10715/OA_HTML/AppsLogin
+
+
+
+SELECT
+        /*+  full(t)    parallel(t,4) parallel_index(t,4) dbms_stats cursor_sharing_exact use_weak_name_resl dynamic_sampling(0) no_monitoring no_substrb_pad  */
+
+
+
+exec DBMS_STATS.GATHER_TABLE_STATS (ownname => 'AHS_BAW' , tabname => 'WC_OPC_AP_INV_DIST_F_MV1',cascade => true, estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,method_opt=>'FOR ALL COLUMNS SIZE AUTO', granularity => 'ALL', degree => 4);
+
+
+SELECT
+    s.sid,
+    s.sql_id,
+    s.logon_time,
+    s.username,
+    s.osuser,
+    s.module,
+    px.server_name,
+    px.status
+FROM
+    v$px_process px,
+    v$session s
+WHERE
+    s.sid = px.sid
+
+
+
+[?10/?13/?2017 9:53 AM] Md Mizanur Rahman: 
+Select 
+ name, 
+ a.Start_TS, 
+ round(((a.End_TS- a.Start_TS)*24*60),2) As Duration_Mins 
+ from ahs_DAC.W_ETL_RUN_SDTL a 
+where name in 
+('CUSTOM create WC_OPC_EXPENDITURE_F_MV') 
+and a.Start_TS is NOT null and round(((a.End_TS- a.Start_TS)*24*60),2)<>0 
+Order BY a.Start_TS DESC 
+
+
+
+
+SELECT
+    step_name,
+    MAX(DECODE(yyyy_mm_dd,'2017/10/02',dur_min) ) "Mins_in_Oct_02",
+    MAX(DECODE(yyyy_mm_dd,'2017/10/03',dur_min) ) "Mins_in_Oct_03",
+    MAX(DECODE(yyyy_mm_dd,'2017/10/04',dur_min) ) "Mins_in_Oct_04",
+    MAX(DECODE(yyyy_mm_dd,'2017/10/05',dur_min) ) "Mins_in_Oct_05",
+    MAX(DECODE(yyyy_mm_dd,'2017/10/06',dur_min) ) "Mins_in_Oct_06",
+    MAX(DECODE(yyyy_mm_dd,'2017/10/09',dur_min) ) "Mins_in_Oct_09",
+    MAX(DECODE(yyyy_mm_dd,'2017/10/10',dur_min) ) "Mins_in_Oct_10",
+    MAX(DECODE(yyyy_mm_dd,'2017/10/11',dur_min) ) "Mins_in_Oct_11",
+    MAX(DECODE(yyyy_mm_dd,'2017/10/12',dur_min) ) "Mins_in_Oct_12"
+FROM
+    (
+        SELECT
+            a.etl_proc_wid,
+            TO_CHAR(a.last_upd,'YYYY/MM/DD') AS yyyy_mm_dd,
+            b.step_name,
+            round(
+                ( (b.end_ts - b.start_ts) * 24 * 60),
+                2
+            ) AS dur_min
+        FROM
+            ahs_dac.w_etl_defn_run a,
+            ahs_dac.w_etl_run_step b
+        WHERE
+                a.etl_defn_name = 'Custom_FA-SCA-PSA-AH-OPC_incr'
+            AND
+                b.step_name IN (
+                    'CUSTOM GROUP GL Acct-FC-AH','CUSTOM_BS_WC_GL_OTHER_BUDGET_TP_F_INS','TASK_GROUP_GLRecon_APTransactionFact','CUSTOM_BS_WC_BS_BUDGET_CURR_M_FS_INS'
+,'CUSTOM_MR_WC_FUNCTIONAL_STRING_D_INSUPD','SIL_APTransactionFact_DiffManLoad','TASK_GROUP_Extract_ProductLotTransactionFact','SIL_ProductLotTransactionFact'
+,'TASK_GROUP_Load_PositionHierarchy','CUSTOM_MR_WC_FUNCTIONAL_STRING_D_INSUPD'
+                )
+            AND
+                a.row_wid = b.run_wid
+            AND
+                b.start_ts IS NOT NULL
+            AND
+                TO_CHAR(a.last_upd,'YYYY/MM/DD') IN (
+                    '2017/10/02','2017/10/03','2017/10/04','2017/10/05','2017/10/06','2017/10/09','2017/10/10','2017/10/11','2017/10/12'
+                )
+        ORDER BY b.start_ts DESC
+    )
+GROUP BY
+    step_name
+
+
+
+
+SELECT
+    cr.task,
+    cr.starttime,
+    cr.endtime,
+    cr.elapsedtimesecs,
+    cr.status,
+    cr.successfulrows,
+    cr.failedrows, 
+    cr.Hours,
+    pr.task,
+    pr.starttime,
+    pr.endtime,
+    pr.elapsedtimesecs,
+    pr.status,
+    pr.successfulrows,
+    pr.failedrows,
+    pr.hours
+FROM
+    (
+        SELECT
+            d.etl_defn_name executionplan,
+            r.phy_folder_name folder,
+            r.step_name task,
+            TO_CHAR(r.start_ts,'DD-MON-YYYY HH:MI:SS') starttime,
+            TO_CHAR(r.end_ts,'DD-MON-YYYY HH:MI:SS') endtime,
+            round(
+                (r.end_ts - r.start_ts) * 86400,
+                2
+            ) elapsedtimesecs,
+            (round(
+                (r.end_ts - r.start_ts) * 86400,
+                2
+            ))/60/60 Hours,
+            r.status,
+            r.sucess_rows successfulrows,
+            r.failed_rows failedrows
+        FROM
+            ahs_dac.w_etl_defn_run d,
+            ahs_dac.w_etl_run_step r
+        WHERE
+                d.row_wid = r.run_wid
+            AND
+                d.row_wid = '27D5D5681DB9EF2BEF3097426541429C' and r.step_name not like '%TASK_GROUP%'
+    ) cr,
+    (
+        SELECT
+            d.etl_defn_name executionplan,
+            r.phy_folder_name folder,
+            r.step_name task,
+            TO_CHAR(r.start_ts,'DD-MON-YYYY HH:MI:SS') starttime,
+            TO_CHAR(r.end_ts,'DD-MON-YYYY HH:MI:SS') endtime,
+            round(
+                (r.end_ts - r.start_ts) * 86400,
+                2
+            ) elapsedtimesecs,
+            (round(
+                (r.end_ts - r.start_ts) * 86400,
+                2
+            ))/60/60 Hours,
+            r.status,
+            r.sucess_rows successfulrows,
+            r.failed_rows failedrows
+        FROM
+            ahs_dac.w_etl_defn_run d,
+            ahs_dac.w_etl_run_step r
+        WHERE
+                d.row_wid = r.run_wid
+            AND
+                d.row_wid = '9B9F7D1FD2AF83C7E0143CEF45E5B5' and r.step_name not like '%TASK_GROUP%'
+    ) pr
+WHERE
+    pr.task = cr.task order by 4 desc
+
+
+
+
+alter session set nls_date_format = 'DD-MON-YYYY HH24:MI:SS';
+
+
+
+SELECT
+    name,
+    a.start_ts,
+    round(
+        ( (a.end_ts - a.start_ts) * 24 * 60),
+        2
+    ) AS duration_mins
+FROM
+    ahs_dac.w_etl_run_sdtl a
+WHERE
+        name IN (
+            'CUSTOM create WC_GL_BU-SITE-FC_MVs'
+        )
+    AND
+        a.start_ts IS NOT NULL
+    AND
+        round(
+            ( (a.end_ts - a.start_ts) * 24 * 60),
+            2
+        ) <> 0
+ORDER BY 2 DESC
+
+
+
+
+
+SELECT
+    a.tablespace_name tablespace,
+    d.mb_total,
+    SUM(a.used_blocks * d.block_size) / 1024 / 1024 / 1024 gb_used,
+    d.mb_total - SUM(a.used_blocks * d.block_size) / 1024 / 1024 / 1024 gb_free
+FROM
+    v$sort_segment a,
+    (
+        SELECT
+            b.name,
+            c.block_size,
+            SUM(c.bytes) / 1024 / 1024 / 1024 mb_total
+        FROM
+            v$tablespace b,
+            v$tempfile c
+        WHERE
+            b.ts# = c.ts#
+        GROUP BY
+            b.name,
+            c.block_size
+    ) d
+WHERE
+    a.tablespace_name = d.name
+GROUP BY
+    a.tablespace_name,
+    d.mb_total
+
+
+
+SELECT
+    SNA.USER_NAME,SNA.START_TS,SNA.END_TS,SNA.SAW_DASHBOARD
+FROM
+    ahs_biplatform.s_nq_db_acct snda,
+    ahs_biplatform.s_nq_acct sna
+WHERE
+        SNDA.query_text LIKE '%W_AP_XACT_F%'
+    AND
+        sna.ID = snda.logical_query_id ORDER BY START_TS DESC 
+
+
+
+.*("AHS_BAW"\."[A-Za-z0-9_]*").*
+
+
+SELECT
+    w_etl_defn_run.etl_proc_wid,
+    w_etl_defn.name AS exec_plan_name,
+    w_etl_defn.last_design_dt,
+    w_etl_defn_run.name,
+    w_etl_defn_run.etl_defn_name,
+    w_etl_defn_run.status AS run_status,
+    w_etl_defn_run.status_desc AS run_status_desc,
+    w_etl_defn_run.total_steps AS total_steps_run,
+    w_etl_defn_run.succ_steps AS total_succ_steps_run,
+    w_etl_defn_run.start_ts AS run_start_time,
+    w_etl_defn_run.end_ts AS run_end_ime,
+    w_etl_run_step.step_name,
+    w_etl_step.cmd_name AS command_name,
+    w_etl_step.fl_cmd_name AS full_command_name,
+    w_etl_run_step.phy_src_name,
+    w_etl_run_step.phy_trgt_name,
+    w_etl_run_step.phy_folder_name,
+    w_etl_run_step.app_wid AS source_system_container,
+    w_etl_run_step.depth,
+    w_etl_run_step.phase_name,
+    w_etl_run_step.start_ts AS step_start_time,
+    w_etl_run_step.end_ts AS step_end_time,
+    w_etl_run_step.status AS step_status,
+    w_etl_run_step.sucess_rows AS step_success_rows,
+    w_etl_run_step.failed_rows step_failed_rows,
+    w_etl_run_step.status_desc AS step_status_desc,
+    w_etl_run_sdtl.name AS task_sdtl_name,
+    w_etl_run_sdtl.type_cd AS task_sdtl_type,
+    w_etl_run_sdtl.status_cd AS task_sdtl_status,
+    w_etl_run_sdtl.start_ts AS task_sdtl_start_time,
+    w_etl_run_sdtl.end_ts AS task_sdtl_end_time,
+    w_etl_run_sdtl.sucess_rows AS task_sdtl_success_rows,
+    w_etl_run_sdtl.status_desc AS task_sdtl_status_desc,
+    w_etl_index.isbitmap,
+    w_etl_index.name AS index_name,
+    w_etl_table.name AS table_name,
+    w_etl_table.type_cd AS table_type_code
+FROM
+    ahs_dac.w_etl_defn_run,
+    ahs_dac.w_etl_run_step,
+    ahs_dac.w_etl_run_sdtl,
+    ahs_dac.w_etl_index,
+    ahs_dac.w_etl_table,
+    ahs_dac.w_etl_defn,
+    ahs_dac.w_etl_step
+WHERE
+        w_etl_defn.row_wid = w_etl_defn_run.etl_defn_wid
+    AND
+        w_etl_defn_run.row_wid = w_etl_run_step.run_wid
+    AND
+        w_etl_run_sdtl.run_step_wid = w_etl_run_step.row_wid
+    AND
+        w_etl_run_sdtl.index_wid = w_etl_index.row_wid (+)
+    AND
+        w_etl_run_sdtl.table_wid = w_etl_table.row_wid (+)
+    AND
+        w_etl_run_step.step_wid = w_etl_step.row_wid
+        and ahs_dac.w_etl_run_sdtl.row_wid='B1E0E81CDAFB98296F2BA19BDD8BB63'
+ORDER BY
+    w_etl_defn_run.etl_proc_wid DESC,
+    w_etl_run_step.depth ASC
+
+
+
+SELECT
+    b.step_name,
+    a.*,
+    a.name,
+    a.start_ts AS start_date,
+    round(
+        ( (a.end_ts - a.start_ts) * 24 * 60),
+        2
+    ) AS duration_mins
+FROM
+    ahs_dac.w_etl_run_sdtl a,
+    ahs_dac.w_etl_run_step b
+WHERE
+        a.name LIKE '%OPC_EXPENDITURE_F_MV%'
+    AND
+        TO_DATE(a.start_ts,'DD-MON-YY') BETWEEN TO_DATE(SYSDATE - 1,'DD-MON-YY') AND TO_DATE(SYSDATE,'DD-MON-YY')
+    AND
+        a.type_cd = 'Create Index'
+    AND
+        a.run_step_wid = b.row_wid
+
+
+
+SELECT
+    b.step_name,
+    a.*,
+    a.name,
+    a.start_ts AS start_date,
+    round(
+        ( (a.end_ts - a.start_ts) * 24 * 60),
+        2
+    ) AS duration_mins
+FROM
+    ahs_dac.w_etl_run_sdtl a,
+    ahs_dac.w_etl_run_step b
+WHERE
+        a.name LIKE '%OPC%MV%'
+    AND
+        TO_DATE(a.start_ts,'DD-MON-YY') BETWEEN TO_DATE(SYSDATE - 1,'DD-MON-YY') AND TO_DATE(SYSDATE,'DD-MON-YY')
+    AND
+        a.run_step_wid = b.row_wid
+    AND
+        a.name NOT LIKE '%Index%'
+    AND
+        a.type_cd <> 'Truncate Table' 
+
+
+
+0hpd5yy4u6q5m
+
+
+
+http://wsdrm02.healthy.bewell.ca/drm-web-client/Logon.aspx?app=WSDRM02-1&LOGIN=ReadOnly -- DRM Prod
+
+
+
+1) Load TEST environment Information
+
+Data Warehouse:
+==============
+DB Name : MRDWLDT
+
+Repository Schema: AHS_DAC, AHS_BAW, AHS_INFADM
+
+Informatica/DAC:
+===============
+
+Server = uxmretl01t
+
+Windows VM = wsemgradm01t
+
+Informatica Repository connection:
+---------------------------------
+Domain = Domain_ahs_mrldr
+Server = uxmretl01t
+Port = 50005
+
+Repository Name: AHS_MRLDR_Repository
+
+Informatica Repostiory username/password = same as before
+
+OBIEE 12c
+=========
+
+Server = uxmrapp01t
+
+BI Publisher URL:
+      http://mrbildt.healthy.bewell.ca:11003/xmlpserver
+BI Analytics URL:
+      http://mrbildt.healthy.bewell.ca:11003/analytics
+http://mrbildt.albertahealthservices.ca:35004/analytics
+
+      
+Windows VM : wsemgradm01t   
+
+12c BI Schema: FMW_BIPLATFORM, FMW_MDS etc..
+12c BI Schema Password: Deve10per$
+
+Users's with BI Administrator role in OBIEE 12c:
+
+Password = welcome2MR
+
+ANJADIDUCK	
+BOZENAGALUS	
+CHRISTINELENNY
+CHRISPARSONAGE
+GEORGEDAWSON	
+HELENSTEPHENSON	
+MARKLIGGAYU	
+MIZANURRAHMAN	
+NARAYANABHAMIDIPATI	
+prashantpatiyanrajen
+ROHITGULATI	
+SUMRARNPISAISANSUK	
+SIJIGEORGE	
+TRACEYDESROCHES
+VIVEKKUMAR
+
+BVT:
+====
+Open a command prompt on Windows VM wsemgradm03t,
+
+set JAVA_HOME=C:\Program Files (x86)\Java\jre1.8.0_151
+set PATH=%JAVA_HOME%/bin;%PATH%;
+
+cd D:\BVT
+
+.\bin\obibvt.bat -config testconfig.xml -deployment BI11G
+.\bin\obibvt.bat -config testconfig.xml -deployment PreUpgrade
+
+.\bin\obibvt.bat -config testconfig.xml -deployment BI12C
+.\bin\obibvt.bat -compareresults Results\BI11G Results\BI12C -config testconfig.xml
+.\bin\obibvt.bat -compareresults Results\PreUpgrade Results\PostUpgrade -config testconfig.xml
+
+
+
+2) TRAIN environment Information
+
+Data Warehouse:
+==============
+DB Name : MRDWTRN
+
+Repository Schema: AHS_DAC, AHS_BAW, AHS_INFADM
+
+Informatica/DAC:
+===============
+
+Server = uxmretl01t
+
+Windows VM = wsemgradm03t
+
+Informatica Repository connection:
+---------------------------------
+Domain = Domain_ahs_mrtrn
+Server = uxmretl01t
+Port = 30005
+
+Repository Name: AHS_MRTRN_Repository
+
+Informatica Repostiory username/password = same as before
+
+OBIEE 12c
+=========
+
+Server = uxmrapp01t
+
+BI Publisher URL:
+            http://mrbitrn.healthy.bewell.ca:12002/xmlpserver
+BI Analytics URL:
+            http://mrbitrn.healthy.bewell.ca:12002/analytics
+
+12c BI Schema: FMW_BIPLATFORM, FMW_MDS etc..
+12c BI Schema Password: Deve10per$
+            
+Windows VM : wsemgradm03t   
+
+Users's with BI Administrator role in OBIEE 12c:
+
+Password = welcome2MR
+
+ANJADIDUCK	
+BOZENAGALUS	
+CHRISTINELENNY
+CHRISPARSONAGE
+GEORGEDAWSON	
+HELENSTEPHENSON	
+MARKLIGGAYU	
+MIZANURRAHMAN	
+NARAYANABHAMIDIPATI	
+prashantpatiyanrajen
+ROHITGULATI	
+SUMRARNPISAISANSUK	
+SIJIGEORGE	
+TRACEYDESROCHES
+VIVEKKUMAR
+
+
+
+
+
+
+
+
+
+/usr/bin:/etc:/usr/sbin:/usr/ucb:/usr/bin/X11:/sbin:/home/rpatiyan/bin:/usr/sbin:/usr/local/bin:/chweb/mrbildr/u00/java8_64/bin
+
+
+
+chmod -R  777 ./OracleBI-BVT
+
+
+
+
+export PATH=/usr/bin:/etc:/usr/sbin:/usr/ucb:/usr/bin/X11:/sbin:/home/rpatiyan/bin:/usr/sbin:/usr/local/bin:/chweb/mrbildr/u00/java8_64/bin
+
+
+
+EXPRESSION =\"(\w+)\"
+
+
+
+/chweb/mrbildr/u00/java8_64 as JAVA_HOME.
+cd /chweb/mrbildr/u00/bvt 
+.\bin\obibvt.bat -config testconfig.xml -deployment PostUpgrade &
+
+./bin/obibvtsh -config testconfig.xml -deployment PreUpgrade
+./bin/obibvtsh -config testconfig.xml -deployment PostUpgrade
+
+
+
+
+
+ ./bin/obibvtsh -compareresults Results/PreUpgrade Results/PostUpgrade -config testconfig.xml
+.\bin\obibvt.bat -compareresults Results\PreUpgrade Results|PostUpgrade -config testconfig.xml
+
+
+
+Insufficient Privileges. "Access ReportEditingService Service"
+
+1.	WSPSSUP03T
+2.	WSPSSUP04T
+
+
+http://mrbitst.healthy.bewell.ca:13003/analytics/saw.dll?
+
+
+
+Option 1 
+Commit Interval - 200000
+DTM Buffer Size - 2560000000
+Default buffer block size = 128000000
+Line Sequentical buffer length = 1024
+Maximum Memory Allowed for Auto Memory Attributes = 1024MB
+Maximum percentage of Total Memory Allowed For Auto Memory Attributes = 50
+Additional Concurrent Pipelines for Lookup Cache Creation = 5 
+
+
+Option 2
+Commit Interval - 1000000
+DTM Buffer Size - 5120000000
+Default buffer block size = 256000000
+Line Sequentical buffer length = 2048
+Maximum Memory Allowed for Auto Memory Attributes = 2048MB
+Maximum percentage of Total Memory Allowed For Auto Memory Attributes = 50
+Additional Concurrent Pipelines for Lookup Cache Creation = 10 
+
+
+
+
+BEGIN
+    dbms_stats.gather_table_stats(
+        ownname            => 'AHS_BAW',
+        tabname            => 'W_ABSENCE_EVENT_D',
+        cascade            => true,
+        estimate_percent   => dbms_stats.auto_sample_size,
+        degree             => 16,
+        granularity        => 'AUTO',
+        method_opt         => 'FOR ALL COLUMNS SIZE AUTO'
+    );
+END;
+/
+
+
+
+call NQS_GetAllCacheEntries()
+all NQS_GetAllCacheEntries()
+
+
+
+
+MRDWTST
+select * from DB_11g.S_NQ_ACCT 
+select * from db_11g.S_NQ_DB_ACCT 
+
+
+W_BUSN_LOCATION_D
+W_EMP_DEMOGRAPHICS_D
+W_EMPLOYEE_D
+W_EMPLOYMENT_D
+W_EMPLOYMENT_STAT_CAT_D
+WC_HR_PM_VGUAGE_A
+WC_HR_VACANCY_A
+W_WRKFC_EVT_MONTH_F
+
+Mar 19 to Apr 1 pay period, then Apr2 to Apr 15 pay period are effective dates of system 
+
+
+
+
+rpatiyan/Jill@1234
+
+
+Sub CreateSheetsFromAList()
+Dim MyCell As Range, MyRange As Range
+
+Set MyRange = Sheets("Details").Range("C2")
+Set MyRange = Range(MyRange, MyRange.End(xlDown))
+
+For Each MyCell In MyRange
+Dim ws As Worksheet
+Set ws = ThisWorkbook.Sheets.Add(After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)) 'creates a new worksheet
+MsgBox MyCell.Value
+' Sheets(Sheets.Count).Name = MyCell.Value  renames the new worksheet
+ws.Name = MyCell.Value
+Next MyCell
+End Sub
+
+
+	
+
+exec DBMS_STATS.GATHER_TABLE_STATS (ownname => 'AHS_BAW' , tabname => 'WC_BS_GL_OTHER_ACCT_BUDGET_FS_EX',cascade => true, estimate_percent => DBMS_STATS.AUTO_SAMPLE_SIZE,method_opt=>'FOR ALL COLUMNS SIZE AUTO', granularity => 'ALL', degree => 4);
+
+
+mysql -u hr_user -h ms.itversity.com -p itversity
+
+
+
+SELECT
+    sales.customer,
+    sales.product,
+    tim.v_days,
+    sales.qty_sold,
+    SUM(
+        sales.qty_sold
+    ) OVER(PARTITION BY
+        sales.customer,           
+        tim.qtr
+    ) TOT_PROD_OVER_PERIOD
+FROM (
+    (
+        SELECT
+            product,
+            customer,
+            d_sold,
+            qty_sold
+        FROM
+            sales
+    ) sales
+    PARTITION BY ( customer,product ) RIGHT OUTER JOIN (
+        SELECT
+            v_days,
+            qtr
+        FROM
+            july_dates
+    ) tim ON tim.v_days = sales.d_sold
+)
+
+
+SELECT
+    st.sid,
+    sn.name,
+    st.value
+FROM
+    v$sesstat st,
+    v$statname sn
+WHERE
+        st.sid = 1745
+    AND
+        st.statistic# = sn.statistic#
+
+		
+		
+		
+/apps/hive/warehouse/prashant_sqoop_import.db/daily_revenue
+
+sqoop export \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--export-dir /apps/hive/warehouse/prashant_sqoop_import.db/daily_revenue \
+--input-fields-terminated-by "\001" \
+--table daily_revenue_demo
+--columns revenue,order_date \
+
+
+create table daily_revenue_demo (
+revenue float,
+order_date varchar(30),
+description varchar(200))
+
+insert 
+select order_date,sum(order_item_subtotal) daily_revenue from orders join order_items on order_id=order_item_order_id where order_date like '2013-08%' group by order_date		
+rpatiyan@July@1234
+
+
+Monitored SQL Execution Details: 6dc2yyvbssvt5 -- Session Details: 278 (Unknown)
+Monitored SQL Execution Details: 51zb41bxb290p -- Session Details: 393 (Unknown)
+
+
+
+SELECT
+    b.saw_src_path,
+    a.query_blob,
+    a.time_sec,
+    a.row_countFROM
+    fmw_biplatform.s_nq_db_acct a,
+    fmw_biplatform.s_nq_acct b
+WHERE
+        trunc(a.start_ts) > trunc(SYSDATE) - 100
+    AND
+        a.time_sec > 1800
+    AND
+        a.logical_query_id = b.id
+		
+		
+		
+
+		
+rpatiyan/@Jack1234@		- uxmrapp01t
+
+
+Getting completion times. 
+
+SELECT
+    drnk,
+    last_upd,
+    name
+FROM
+    (
+        SELECT
+            DENSE_RANK() OVER(PARTITION BY
+                substr(
+                    name,
+                    1,
+                    instr(name,':')
+                )
+                ORDER BY
+                    last_upd
+                DESC
+            ) drnk,
+            last_upd,
+            name
+        FROM
+            ahs_dac.w_etl_defn_run
+        WHERE
+                name LIKE '%Custom_FA-SCA-PSA-HR-AH-OPC_full%'
+            OR
+                name LIKE 'Custom_FA-SCA-PSA-AH-OPC_incr%'
+            OR
+                name LIKE 'Custom_HR_incr%'
+    )
+WHERE
+    drnk = 1
+	
+	
+	
+	
+wlsjndi\wlsjndi123 	
+
+https://careers.albertahealthservices.ca/jobs/it-proc-chng-rel-mgmt-srv-lev4-technical-lead-85485 
+
+
+
+
+SELECT 'GROUP', 
+    LTRIM(SYS_CONNECT_BY_PATH(responsibility_name, ';'), ';')
+FROM (SELECT user_name,
+             responsibility_name,
+             row_number() over(order by responsibility_name) rownumber,
+             count(*) over () cnt
+        FROM (SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_DIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_DIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_DIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_DIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( 'valueof(NQ_SESSION.USER)')
+                    UNION
+                    SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_INDIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_INDIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_INDIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_INDIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( 'valueof(NQ_SESSION.USER)'))) data
+    WHERE rownumber = cnt
+    START WITH rownumber = 1
+    CONNECT BY PRIOR rownumber = rownumber - 1
+	
+	
+	
+SELECT USER_NAME FROM APPS.FND_USER WHERE USER_NAME= UPPER(':USER') NQS_PASSWORD_CLAUSE( AND APPS.cust_fnd_web_sec(':USER', ':PASSWORD') = 'Y' )NQS_PASSWORD_CLAUSE
+
+"Oracle EBS OLTP"."Oracle EBS OLTP DbAuth Connection Pool" 
+
+
+
+
+
+
+SELECT
+    user_name,
+    start_ts,
+    end_ts,
+    total_time_sec
+FROM
+    fmw_biplatform.s_nq_acct
+WHERE
+    error_text LIKE '%governing execution time%'
+ORDER BY start_ts DESC
+
+
+
+AHS-PRD-EMGR-DASHBRD/Zimba89#
+
+(\\healthy.bewell.ca\groups) 
+
+
+
+SELECT
+    sna.user_name,
+    sna.start_ts,
+    sna.end_ts,
+    sna.saw_dashboard,
+    sna.query_blob,
+    snda.query_text,
+    snda.query_blob
+FROM
+    fmw_biplatform.s_nq_db_acct snda,
+    fmw_biplatform.s_nq_acct sna
+WHERE
+        sna.id = snda.logical_query_id
+    AND
+        user_name = 'MRADMIN'
+    AND
+        saw_dashboard = '/shared/Human Resources/_portal/Front Page'
+ORDER BY sna.start_ts DESC
+    
+	
+prashantpatiyanrajen
+9Ra5han
+WSSQLDB02T\TSTINST01
+careman
+56522
+
+
+
+	
+	
+USE careman;  
+GO  
+EXEC sp_rename 'dbo.RTDATAAUDITED.CDB', 'cdb_1', 'COLUMN';  
+GO  	
+
+
+
+USE careman;  
+GO  
+EXEC sp_rename 'dbo.RTDATAVALIDATED.CDB', 'cdb_1', 'COLUMN';  
+GO  	
+
+
+
+SELECT
+    pov.profile_option_value "VALUE"
+FROM
+    fnd_profile_options_vl po,
+    fnd_profile_option_values pov
+WHERE
+        pov.application_id = po.application_id
+    AND
+        pov.profile_option_id = po.profile_option_id
+    AND
+        pov.level_id = '10001'
+    AND
+        po.profile_option_name IN (
+            'SITENAME'
+        ); -- AHS FINDEV - cloned from FINPRD (26-Apr-2018 05:00 AM)
+		
+		
+		
+		
+		
+		
+@{biServer.variables['AHS_HR_ORG_NUM']}
+
+@{biServer.variables['NQ_SESSION.AHS_HR_ORG_NUM']}
+
+
+
+select sys_context('userenv', 'db_name') from dual;
+
+
+
+
+select * from v$instance
+
+select sys_context('userenv','sid') from dual;
+
+select sys_context('userenv', 'db_name') from dual;
+
+
+
+SELECT 'GROUP', 
+    LTRIM(SYS_CONNECT_BY_PATH(responsibility_name, ';'), ';')
+FROM (SELECT user_name,
+             responsibility_name,
+             row_number() over(order by responsibility_name) rownumber,
+             count(*) over () cnt
+        FROM (SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_DIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_DIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_DIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_DIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_DIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER( 'WENDYHEIDEBRECHT-JOSSA')
+                    UNION
+                    SELECT user_name, RESPONSIBILITY_KEY responsibility_name 
+                      FROM FND_USER,
+                                 FND_USER_RESP_GROUPS_INDIRECT, 
+                                 FND_RESPONSIBILITY_VL 
+                    WHERE FND_USER.user_id = FND_USER_RESP_GROUPS_INDIRECT.user_id 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_ID = FND_RESPONSIBILITY_VL.RESPONSIBILITY_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.RESPONSIBILITY_APPLICATION_ID = FND_RESPONSIBILITY_VL.APPLICATION_ID 
+                         AND FND_USER_RESP_GROUPS_INDIRECT.START_DATE < SYSDATE 
+                         AND (CASE WHEN FND_USER_RESP_GROUPS_INDIRECT.END_DATE IS NULL THEN SYSDATE ELSE TO_DATE(FND_USER_RESP_GROUPS_INDIRECT.end_Date) END) >= SYSDATE
+                         AND RESPONSIBILITY_KEY LIKE 'MR%'                  
+                         AND FND_USER.user_name = UPPER('WENDYHEIDEBRECHT-JOSSA'))) data
+    WHERE rownumber = cnt
+    START WITH rownumber = 1
+    CONNECT BY PRIOR rownumber = rownumber - 1
+	
+	
+	
+	
+	set define off
+ 
+select* from wc_mr_user_vw where lower(user_login) like '%chapple%' and user_id=85844 -- 00034497.Director of Operations, Quality & Perf
+
+select * from wc_accountability_hier_d_mv where level1_name='00133118.Director, Executive Services'
+
+
+
+CUSTOM_HR_W_ABSENCE_EVENT_F_UPD
+PLP_AbsenceEventFact
+PLP_AbsenceEventFact_PositionHierarchy_Update
+
+
+Hel0k1ty.
+
+
+set hive.cli.print.current.db=true;
+
+
+
+hive --database ccm -e "show tables"  | grep -i v_ahs_assessments_all_TBL
+
+
+sqoop import --connect "jdbc:sqlserver://wssqldb02t:56522;databaseName=careman" --username=prashantpatiyanrajen --password=9Ra5han --table  categories --hive-import --hive-table ccm_new.categories_h -m 1
+
+
+
+
+solix/P@s$0l!x
+admin/elo~xl:YF4z!
+hive/H1v34aHs!
+root/!S*975:r50865
+
+
+
+
+
+SELECT DISTINCT
+    d.subject_area,d.object_name,d.object_type_name
+FROM
+    (
+        SELECT
+            u.user_name,
+            s.subject_area,
+            v.object_name,
+            ot.object_type_name,
+            v.last_saved,
+            v.comments
+        FROM
+            ahs_infadm.opb_version_props v,
+            ahs_infadm.rep_users u,
+            ahs_infadm.rep_subject s,
+            ahs_infadm.opb_object_type ot
+        WHERE
+                u.user_id IN (
+                    1255,1279,1274,1248,1278
+                )
+            AND
+                u.user_id = v.user_id
+            AND
+                s.subject_id = v.subject_id
+            AND
+                u.status = 0
+            AND
+                ot.object_type_id = v.object_type
+            AND
+                s.subject_area <> 'NB_CUSTOM_SDE_PSFT_91_Adaptor'
+            AND
+                s.subject_area <> 'CUSTOM_PLP_BAK_20180626'
+            AND
+                s.subject_area <> 'CUSTOM_SDE_PSFT_91_Adaptor'
+            AND
+                u.user_name NOT IN (
+                    'Administrator'
+                )
+            AND
+                comments <> 'Backup for Upgrade : NB'
+    ) d
+WHERE
+        d.user_name = 'prashantpatiyanrajen' and object_type_name like '%Mapp%'
+    
+	
+	
+	
+SELECT 
+  t.Name                                       AS TableName,
+  s.Name                                       AS SchemaName,
+  p.Rows                                       AS RowCounts,
+  SUM(a.total_pages) * 8                       AS TotalSpaceKB,
+  SUM(a.used_pages) * 8                        AS UsedSpaceKB,
+  (SUM(a.total_pages) - SUM(a.used_pages)) * 8 AS UnusedSpaceKB
+  into size_db 
+FROM
+  sys.tables t
+  INNER JOIN sys.indexes i ON t.object_id = i.object_id
+  INNER JOIN sys.partitions p ON i.object_id = p.object_id AND i.index_id = p.index_id
+  INNER JOIN sys.allocation_units a ON p.partition_id = a.container_id
+  LEFT OUTER JOIN sys.schemas s ON t.schema_id = s.schema_id
+WHERE
+  t.Name NOT LIKE 'dt%'
+  AND t.is_ms_shipped = 0
+  AND i.object_id > 255
+GROUP BY
+  t.Name, s.Name, p.Rows
+ORDER BY
+  t.Name;
+GO
+
+
+
+PrashantPatiyanRajendran
+Deve10per
+
+rpatiyan/@Wapiti1234@
+
+
+
+>>> def disp10(v_rdd):
+...  for i in v_rdd.take(10):print i
+...
+
+
+
+
+SELECT
+    *
+FROM
+    wc_accountability_hier_d_mv
+WHERE
+    (
+            level2_name LIKE '%1%'
+        OR
+            level3_name LIKE '%1%'
+        OR
+            level4_name LIKE '%1%'
+        OR
+            level5_name LIKE '%1%'
+        OR
+            level6_name LIKE '%1%'
+        OR
+            level7_name LIKE '%1%'
+        OR
+            level8_name LIKE '%1%'
+        OR
+            level9_name LIKE '%1%'
+        OR
+            level10_name LIKE '%1%'
+        OR
+            level11_name LIKE '%1%'
+        OR
+            level12_name LIKE '%1%'
+    )
+	
+	
