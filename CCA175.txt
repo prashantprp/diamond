@@ -1,0 +1,15 @@
+retail_db 
+hr_db
+nyse_db
+
+retail_user
+hr_user
+nyse_user 
+
+Password:itversity
+
+
+
+
+
+
