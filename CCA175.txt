@@ -8,8 +8,513 @@ nyse_user
 
 Password:itversity
 
+sqoop export --connect jdbc:mysql://ms.itversity.com:3306/retail_export --username retail_user --password itversity --export-dir /apps/hive/warehouse/dgadiraju_sqoop_import.db/daily_revenue --input-fields-terminated-by "\001" --table daily_revenue_prp
+
+RDD to be written back in AVRO,TEXT,JSON,PARQUET,ORC. 
+
+pyspark --master yarn --conf spark.ui.port=12888
 
 
 
+sc  -- Spark Context
+sqlcontext -- Sql Context for hive created using spark context. 
 
 
+orders = sc.textFile("/public/retail_db/orders")
+orders.map(lambda o: o.split(",")[1].split(" ")[0].replace("-","@")).first()
+
+
+===FlatMap==================================
+
+vlist=["This", "is", "a", "Test"] -- This is a python list 
+rddvlist=sc.parallelize(vlist) -- This is how a Python list is converted into a rdd 
+fmaprddvlist=rddvlist.flatMap(lambda o: o.split(",")) -- Using the flatmap on a rdd 
+for i in fmaprddvlist.take(10):print i	-- Checking the value in the flatlist 
+
+
+================Filter data using filter=================== 
+
+orders = sc.textFile("/public/retail_db/orders")
+ordersComplete = orders. \
+filter(lambda o: 
+  o.split(",")[3] in ["COMPLETE", "CLOSED"] and o.split(",")[1][:7] == "2014-01")
+  
+  
+
+================Joining Data Sets========================== 
+Inner Join
+===============
+	orders = sc.textFile("/public/retail_db/orders")
+	orderItems = sc.textFile("/public/retail_db/order_items")
+	ordersMap = orders. \map(lambda o:(int(o.split(",")[0]), o.split(",")[1]))
+	orderItemsMap = orderItems. \map(lambda oi:(int(oi.split(",")[1]), float(oi.split(",")[4])))
+
+ordersJoin = ordersMap.join(orderItemsMap)
+
+for i in ordersJoin.take(10): print(i)				
+				Outer Join
+				
+leftOuterJoin,rightOuterJoin,
+===============
+orders = sc.textFile("/public/retail_db/orders")
+orderItems = sc.textFile("/public/retail_db/order_items")
+ordersMap = orders. \
+map(lambda o:(int(o.split(",")[0]), o.split(",")[3]))
+orderItemsMap = orderItems. \
+map(lambda oi:(int(oi.split(",")[1]), float(oi.split(",")[4])))
+ordersLeftOuterJoin = ordersMap.leftOuterJoin(orderItemsMap)
+ordersLeftOuterJoinFilter = ordersLeftOuterJoin. \filter(lambda o: o[1][1] == None)
+for i in ordersLeftOuterJoin.take(10): print(i)
+ordersRightOuterJoin = orderItemsMap.rightOuterJoin(ordersMap)
+ordersRightOuterJoinFilter = ordersRightOuterJoin. \filter(lambda o: o[1][0] == None)
+for i in ordersRightOuterJoinFilter.take(10): print(i)										
+				
+===============Aggregations==========================		TBS
+
+#Aggregations - total
+orderItems = sc.textFile("/public/retail_db/order_items")
+orderItems.count()
+
+#Aggregations - total - Get revenue for given order_id
+orderItems = sc.textFile("/public/retail_db/order_items")
+orderItemsFiltered = orderItems. \filter(lambda oi: int(oi.split(",")[1]) == 2)
+orderItemsSubtotals = orderItemsFiltered. \map(lambda oi: float(oi.split(",")[4]))
+from operator import add
+# orderItemsSubtotals.reduce(add)
+orderItemsSubtotals.reduce(lambda x, y: x + y)
+
+
+===============Count and Reduce===============				
+#Get count by status - countByKey
+orders = sc.textFile("/public/retail_db/orders")
+ordersStatus = orders. \map(lambda o: (o.split(",")[3], 1))
+countByStatus = ordersStatus.countByKey()
+for i in countByStatus: print(i)				
+
+========================================groupByKey========================================
+#Get revenue for each order_id - groupByKey
+orderItems = sc.textFile("/public/retail_db/order_items")
+
+orderItemsMap = orderItems. \
+map(lambda oi: (int(oi.split(",")[1]), float(oi.split(",")[4])))
+
+orderItemsGroupByOrderId = orderItemsMap.groupByKey()
+revenuePerOrderId = orderItemsGroupByOrderId. \
+map(lambda oi: (oi[0], round(sum(oi[1]), 2)))
+
+for i in revenuePerOrderId.take(10): print(i)
+
+#Get order item details in descending order by revenue - groupByKey
+orderItems = sc.textFile("/public/retail_db/order_items")
+
+orderItemsMap = orderItems. \
+map(lambda oi: (int(oi.split(",")[1]), oi))
+orderItemsGroupByOrderId = orderItemsMap.groupByKey()
+
+orderItemsSortedBySubtotalPerOrder = orderItemsGroupByOrderId. \
+flatMap(lambda oi: 
+  sorted(oi[1], key=lambda k: float(k.split(",")[4]), reverse=True)
+  )
+
+for i in orderItemsSortedBySubtotalPerOrder.take(10): print(i)
+
+				
+reduceByKey
+				
+#Get revenue for each order_id - reduceByKey
+orderItems = sc.textFile("/public/retail_db/order_items")
+orderItemsMap = orderItems. \
+map(lambda oi: (int(oi.split(",")[1]), float(oi.split(",")[4])))
+
+from operator import add
+revenuePerOrderId = orderItemsMap. \
+reduceByKey(add)
+
+#Alternative way of adding for each key using reduceByKey
+revenuePerOrderId = orderItemsMap. \
+reduceByKey(lambda x, y: x + y)
+
+for i in revenuePerOrderId.take(10): print(i)
+
+#Get order item id with minimum revenue for each order_id - reduceByKey
+orderItems = sc.textFile("/public/retail_db/order_items")
+orderItemsMap = orderItems. \
+map(lambda oi: (int(oi.split(",")[1]), float(oi.split(",")[4])))
+
+minSubtotalPerOrderId = orderItemsMap. \
+reduceByKey(lambda x, y: x if(x < y) else y)
+				
+				
+#Get order item details with minimum subtotal for each order_id - reduceByKey
+orderItems = sc.textFile("/public/retail_db/order_items")
+orderItemsMap = orderItems. \
+map(lambda oi: (int(oi.split(",")[1]), oi))
+minSubtotalPerOrderId = orderItemsMap. \
+reduceByKey(lambda x, y: 
+  x if(float(x.split(",")[4]) < float(y.split(",")[4])) else y
+  )
+for i in minSubtotalPerOrderId.take(10): print(i)
+
+
+========================================aggregateByKey========================================
+
+aggregateByKey uses combiner
+It is used when logic to compute intermediate values and logic to compute the final value using intermediate values are not the same
+It is a bit tricky to implement
+It takes 3 arguments
+Initialize value – driven by output value type
+Combine function or seqOp – 2 arguments
+first argument – driven by output value type
+the second argument – driven by input value type
+Reduce function or combineOp – 2 arguments – driven by output value type
+
+#Get revenue and count of items for each order id - aggregateByKey
+orderItems = sc.textFile("/public/retail_db/order_items")
+orderItemsMap = orderItems. \
+map(lambda oi: (int(oi.split(",")[1]), float(oi.split(",")[4])))
+for i in orderItemsMap.take(10): print(i)
+revenuePerOrder = orderItemsMap. \
+aggregateByKey((0.0, 0), 
+  lambda x, y: (x[0] + y, x[1] + 1), 
+  lambda x, y: (x[0] + y[0], x[1] + y[1]))
+
+  
+groupByKey can be used for any aggregation
+It is least preferred as combiner will not be used
+groupByKey is a generic API which group values into an array for a given key
+On top of aggregations, we can perform many other transformations using groupByKey
+#Get revenue for each order_id - groupByKey
+orderItems = sc.textFile("/public/retail_db/order_items")
+
+orderItemsMap = orderItems. \
+map(lambda oi: (int(oi.split(",")[1]), float(oi.split(",")[4])))
+
+orderItemsGroupByOrderId = orderItemsMap.groupByKey()
+revenuePerOrderId = orderItemsGroupByOrderId. \
+map(lambda oi: (oi[0], round(sum(oi[1]), 2)))
+
+for i in revenuePerOrderId.take(10): print(i)
+
+
+#Get order item details in descending order by revenue - groupByKey
+orderItems = sc.textFile("/public/retail_db/order_items")
+
+orderItemsMap = orderItems. \
+map(lambda oi: (int(oi.split(",")[1]), oi))
+orderItemsGroupByOrderId = orderItemsMap.groupByKey()
+
+orderItemsSortedBySubtotalPerOrder = orderItemsGroupByOrderId. \
+flatMap(lambda oi: 
+  sorted(oi[1], key=lambda k: float(k.split(",")[4]), reverse=True)
+  )
+
+for i in orderItemsSortedBySubtotalPerOrder.take(10): print(i)
+  
+sortByKey
+
+
+#Sort data by product price - sortByKey
+products = sc.textFile("/public/retail_db/products")
+productsMap = products. \
+filter(lambda p: p.split(",")[4] != ""). \
+map(lambda p: (float(p.split(",")[4]), p))
+productsSortedByPrice = productsMap.sortByKey()
+productsSortedMap = productsSortedByPrice. \
+map(lambda p: p[1])
+
+for i in productsSortedMap.take(10): print(i)
+
+
+====================Global Ranking using sortByKey and take====================
+				
+#Get top N products by price - Global Ranking - sortByKey and take
+products = sc.textFile("/public/retail_db/products")
+productsMap = products. \
+filter(lambda p: p.split(",")[4] != ""). \
+map(lambda p: (float(p.split(",")[4]), p))
+productsSortedByPrice = productsMap.sortByKey(False)
+for i in productsSortedByPrice. \
+map(lambda p: p[1]). \
+take(5): print(i)
+
+
+				
+====================Global Using takeOrdered or Top====================
+
+#Get top N products by price - Global Ranking - top or takeOrdered
+products = sc.textFile("/public/retail_db/products")
+productsFiltered = products. \
+filter(lambda p: p.split(",")[4] != "")
+for i in productsFiltered.take(10): print(i)
+topNProducts = productsFiltered.top(5, key=lambda k: float(k.split(",")[4]))
+topNProducts = productsFiltered. \
+takeOrdered(5, key=lambda k: -float(k.split(",")[4]))
+for i in topNProducts: print(i)
+
+
+
+				
+				
+====================Get Top N Products. 
+
+topNproductsByCategory = productsGroupByCategoryId. \
+flatMap(lambda p:)
+sorted(t[1], key=lambda k: float(k.split(",")[4]), reverse=True)[:3]
+)
+for i in topNProductsByCategory.take(10): print(i)				
+				
+====================Get Top N Priced Products. 
+				
+
+
+				
+====================Get Top N Priced Products create function. 
+
+
+t = productsGroupByCategoryId.first()
+If we want to sort the data in ascending order by the string use below command
+
+sorted(t[1])
+To sort the using product price use below command
+
+sorted(t[1], key=lambda k: float(k.split(",")[4]), reverse=True)
+Related
+Advanced Transformations
+November 14, 2018
+Similar post
+Ranking - By Key - Get top N products by price per category - using flatMap
+July 12, 2018
+Similar post
+Ranking - By Key - Get top N priced products - using Python collections API
+July 12, 2018
+Similar post
+
+← Previous TopicNext Topic →
+
+Filed Under: Uncategorized
+Reader InteractionsPrimary Sidebar
+Hands-On Practice?
+Running into issues?
+
+
+				
+				
+====================Get Top N priced products integrate with flatmap.
+				
+				
+As part of this ranking by key or per group by example to get top N priced products let us conclude by integrating with flatMap.
+
+#Get top N priced products - By Key Ranking 
+#using groupByKey and flatMap
+
+products = sc.textFile("/public/retail_db/products")
+productsFiltered = products. \
+filter(lambda p: p.split(",")[4] != "")
+
+productsMap = productsFiltered. \
+map(lambda p: (int(p.split(",")[1]), p))
+productsGroupByCategoryId = productsMap.groupByKey()
+for i in productsGroupByCategoryId.take(10): print(i)
+
+t = productsGroupByCategoryId. \
+filter(lambda p: p[0] == 59). \
+first()
+
+def getTopNPricedProductsPerCategoryId(productsPerCategoryId, topN):
+  productsSorted = sorted(productsPerCategoryId[1], 
+                     key=lambda k: float(k.split(",")[4]), 
+                     reverse=True
+                   )
+  productPrices = map(lambda p: float(p.split(",")[4]), productsSorted)
+  topNPrices = sorted(set(productPrices), reverse=True)[:topN]
+  import itertools as it
+  return it.takewhile(lambda p: 
+                        float(p.split(",")[4]) in topNPrices, 
+                        productsSorted
+                      )
+
+list(getTopNPricedProductsPerCategoryId(t, 3))
+
+topNPricedProducts = productsGroupByCategoryId. \
+flatMap(lambda p: getTopNPricedProductsPerCategoryId(p, 3))
+for i in topNPricedProducts.collect(): print(i)
+
+				
+				
+				
+====================Set Operations 
+				
+
+#Set operations - Prepare data - subsets of products for 2013-12 and 2014-01
+orders = sc.textFile("/public/retail_db/orders")
+orderItems = sc.textFile("/public/retail_db/order_items")
+
+orders201312 = orders. \
+filter(lambda o: o.split(",")[1][:7] == "2013-12"). \
+map(lambda o: (int(o.split(",")[0]), o))
+
+orders201401 = orders. \
+filter(lambda o: o.split(",")[1][:7] == "2014-01"). \
+map(lambda o: (int(o.split(",")[0]), o))
+
+orderItemsMap = orderItems. \
+map(lambda oi: (int(oi.split(",")[1]), oi))
+
+orderItems201312 = orders201312. \
+join(orderItemsMap). \
+map(lambda oi: oi[1][1])
+orderItems201401 = orders201401. \
+join(orderItemsMap). \
+map(lambda oi: oi[1][1])
+
+				
+====================Union and distinct.
+					
+#Set operations - Union - Get product ids sold in 2013-12 and 2014-01
+products201312 = orderItems201312. \
+map(lambda p: int(p.split(",")[2]))
+products201401 = orderItems201401. \
+map(lambda p: int(p.split(",")[2]))
+
+allproducts = products201312. \
+union(products201401). \
+distinct()
+
+					
+====================Intersect and Minus.
+					
+#Set operations - Intersection - Get product ids sold in both 2013-12 and 2014-01
+products201312 = orderItems201312. \
+map(lambda p: int(p.split(",")[2]))
+products201401 = orderItems201401. \
+map(lambda p: int(p.split(",")[2]))
+
+commonproducts = products201312.intersection(products201401)
+
+#Set operations - minus - Get product ids sold in 2013-12 but not in 2014-01
+
+products201312only = products201312. \
+subtract(products201401). \
+distinct()
+
+products201401only = products201401. \
+subtract(products201312). \
+distinct()
+
+#Set operations - (a-b)u(b-a)
+
+productsSoldOnlyInOneMonth = products201312only. \
+union(products201401only)
+
+					
+====================HDFS text file format.
+					
+#Saving as text files with delimiters - revenue per order id
+orderItems = sc.textFile("/public/retail_db/order_items")
+orderItemsMap = orderItems. \
+map(lambda oi: (int(oi.split(",")[1]), float(oi.split(",")[4])))
+
+from operator import add
+revenuePerOrderId = orderItemsMap. \
+reduceByKey(add). \
+map(lambda r: str(r[0]) + "\t" + str(r[1]))
+
+revenuePerOrderId. \
+saveAsTextFile("/user/dgadiraju/revenue_per_order_id")
+
+# hadoop fs -ls /user/dgadiraju/revenue_per_order_id
+# hadoop fs -tail /user/dgadiraju/revenue_per_order_id/part-00000
+
+for i in sc. \
+textFile("/user/dgadiraju/revenue_per_order_id"). \
+take(100):
+  print(i)
+
+  
+====================HDFS text file format with compression.
+					
+Make sure data is saved with proper delimiters
+Compression
+# Saving as text file - compression
+# Get compression codec from /etc/hadoop/conf/core-site.xml
+orderItems = sc.textFile("/public/retail_db/order_items")
+orderItemsMap = orderItems. \
+map(lambda oi: (int(oi.split(",")[1]), float(oi.split(",")[4])))
+
+from operator import add
+revenuePerOrderId = orderItemsMap. \
+reduceByKey(add). \
+map(lambda r: str(r[0]) + "\t" + str(r[1]))
+
+revenuePerOrderId. \
+saveAsTextFile("/user/dgadiraju/revenue_per_order_compressed",
+  compressionCodecClass="org.apache.hadoop.io.compress.SnappyCodec")
+
+  
+====================Saving Data into HDFS using Data frames - json. 
+					
+					
+Supported file formats
+orc
+json
+parquet
+avro (with databricks plugin)
+Steps to save into different file formats
+Make sure data is represented as Data Frame
+Use write or save API to save Data Frame into different file formats
+Use compression algorithm if required
+# Saving as JSON - Get revenue per order id
+orderItems = sc.textFile("/public/retail_db/order_items")
+orderItemsMap = orderItems. \
+map(lambda oi: (int(oi.split(",")[1]), float(oi.split(",")[4])))
+
+from operator import add
+revenuePerOrderId = orderItemsMap. \
+reduceByKey(add). \
+map(lambda r: (r[0], round(r[1], 2)))
+
+revenuePerOrderIdDF = revenuePerOrderId. \
+toDF(schema=["order_id", "order_revenue"])
+
+revenuePerOrderIdDF.save("/user/dgadiraju/revenue_per_order_json", "json")
+revenuePerOrderIdDF.write.json("/user/dgadiraju/revenue_per_order_json")
+
+sqlContext.read.json("/user/dgadiraju/revenue_per_order_json").show()
+
+======================================================================================================================================================================================				
+
+Data Analysis - Spark SQL or HIVEQL using Spark Context 
+				
+					Different interfaces to run SQL - Hive, Spark SQL
+					Create database and tables of text file format - orders and order_items			
+				    Create database and tables of ORC file format - orders and order_items
+					Running SQL/Hive Commands using pyspark
+					Functions - Getting Started
+					Functions - String Manipulation
+					Functions - Date Manipulation
+					Functions - Aggregate Functions in brief				
+					Functions - case and nvl
+					Row level transformations
+					Joining data between multiple tables.
+					Group by and aggregations.
+					Sorting the data.
+					Set operations - union and union all.
+					Analytics functions - aggregations.
+					Analytics functions - ranking.
+					Windowing functions.
+					Creating Data Frames and register as temp tables.
+					Write Spark Application - Processing Data using Spark SQL.
+					Write Spark Application - Saving Data Frame to Hive tables.
+					Data Frame Operations.
+					
+					
+					
+					
+					
+					
+					
+					
+				
+				
+				
+				
