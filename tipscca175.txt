@@ -1,0 +1,521 @@
+Make sure that you cast the field to the respective data type before  doing the comparison for the filter.
+
+Be careful when you use the reduce function be careful to typecast the variable to the right value otherwise instead of addition string concatenation will happen. 
+
+
+
+mysql -u retail_user to connect to mysql. 
+
+sqoop help list-databases to get help on sqoop 
+
+sqoop list-databases --connect "jdbc:mysql://ms.itversity.com:3306" --username retail_user --password itversity
+
+sqoop list-tables --connect "jdbc:mysql://ms.itversity.com:3306/retail_db" --username retail_user --password itversity
+
+sqoop eval --connect "jdbc:mysql://ms.itversity.com:3306/retail_db" --username "retail_user" --password "itversity" --query "select * from order_items LIMIT 10"
+
+sqoop import --connect "jdbc:mysql://ms.itversity.com:3306/retail_db" --username retail_user --password  itversity --table order_items --warehouse-dir /user/prashantpr/order_items
+
+sqoop import --connect "jdbc:mysql://ms.itversity.com:3306/retail_db" --username retail_user --password  itversity --table order_items --warehouse-dir /user/prashantpr/order_items
+
+sqoop import --connect "jdbc:mysql://ms.itversity.com:3306/retail_db" --username retail_user --password  itversity --table order_items --warehouse-dir /user/prashantpr/order_items -m 12
+
+
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --table order_items \
+  --warehouse-dir /user/dgadiraju/sqoop_import/retail_db \
+  --num-mappers 1 \
+  --delete-target-dir
+  
+  
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --table order_items \
+  --warehouse-dir /user/dgadiraju/sqoop_import/retail_db \
+  --num-mappers 1 \
+  --append
+
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --table order_items_nopk \
+  --warehouse-dir /user/dgadiraju/sqoop_import/retail_db \
+  --split-by order_item_order_id
+  
+#Splitting on text field
+sqoop import \
+  -Dorg.apache.sqoop.splitter.allow_text_splitter=true \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --table orders \
+  --warehouse-dir /user/dgadiraju/sqoop_import/retail_db \
+  --split-by order_status
+  
+
+
+==================================================================================================================  
+File formats
+Text file (default)
+Sequence file
+Avro file
+Parquet file
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --table order_items \
+  --warehouse-dir /user/dgadiraju/sqoop_import/retail_db \
+  --num-mappers 2 \
+  --as-sequencefile
+==================================================================================================================
+
+--compression-codec org.apache.hadoop.io.compress.SnappyCodec
+
+
+As part of this topic, we will talk about Compression Algorithms
+
+Compression algorithms
+Gzip
+Deflate
+Snappy
+Others
+Compression
+Following are the steps to use compression.
+
+Go to /etc/hadoop/conf and check core-site.xml for supported compression codecs
+Use –compress to enable compression
+If compression codec is not specified, it will use gzip by default
+Compression algorithm can be specified using compression-codec
+To uncompress the file use the command gunzip.
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --table order_items \
+  --warehouse-dir /user/dgadiraju/sqoop_import/retail_db \
+  --num-mappers 2 \
+  --as-textfile \
+  --compress \
+  --compression-codec org.apache.hadoop.io.compress.GzipCodec
+
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --table order_items \
+  --warehouse-dir /user/dgadiraju/sqoop_import/retail_db \
+  --num-mappers 2 \
+  --as-textfile \
+  --compress \
+  --compression-codec org.apache.hadoop.io.compress.SnappyCodec
+  
+  
+================================================================================================================== boundary-query
+  
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--table order_items \
+--warehouse-dir /user/dgadiraju/sqoop_import/reatil_db \
+--boundary-query 'select min(order_item_id), max(order_item_id) from order_items where order_item_id > 99999'  
+
+
+
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --table order_items \
+  --warehouse-dir /user/dgadiraju/sqoop_import/retail_db \
+  --boundary-query 'select 100000, 172198'
+
+
+ 
+ 
+As part of this topic, we will talk about Transformations and filtering in Sqoop.
+
+Boundary Query
+Transformations and filtering
+Columns
+Query
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --table order_items \
+  --columns order_item_order_id,order_item_id,order_item_subtotal \
+  --warehouse-dir /user/dgadiraju/sqoop_import/retail_db \
+  --num-mappers 2
+  
+  
+view rawsqoop-import-using-columns.sh hosted with ❤ by GitHub
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --target-dir /user/dgadiraju/sqoop_import/retail_db/orders_with_revenue \
+  --num-mappers 2 \
+  --query "select o.*, sum(oi.order_item_subtotal) order_revenue from orders o join order_items oi on o.order_id = oi.order_item_order_id and \$CONDITIONS group by o.order_id, o.order_date, o.order_customer_id, o.order_status" \
+  --split-by order_id
+  
+
+
+
+sqoop import \
+ --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+ --username retail_user \
+ --password itversity \
+ --table order_items_nopk \
+ --warehouse-dir /user/dgadiraju/sqoop_import/retail_db \
+ --autoreset-to-one-mapper
+
+
+ 
+ 
+ 
+================================================================================================================== Delimiters and handling nulls
+#Default behavior
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/hr_db \
+  --username hr_user \
+  --password itversity \
+  --table employees \
+  --warehouse-dir /user/dgadiraju/sqoop_import/hr_db
+  
+#Changing default delimiters and nulls
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/hr_db \
+  --username hr_user \
+  --password itversity \
+  --table employees \
+  --warehouse-dir /user/dgadiraju/sqoop_import/hr_db \
+  --null-non-string -1 \
+  --fields-terminated-by "\000" \
+  --lines-terminated-by ":"
+  
+  
+
+================================================================================================================== Incremental loads can be performed using
+
+query
+where
+Standard incremental loads
+# Baseline import
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --target-dir /user/dgadiraju/sqoop_import/retail_db/orders \
+  --num-mappers 2 \
+  --query "select * from orders where \$CONDITIONS and order_date like '2013-%'" \
+  --split-by order_id
+
+# Query can be used to load data based on condition
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --target-dir /user/dgadiraju/sqoop_import/retail_db/orders \
+  --num-mappers 2 \
+  --query "select * from orders where \$CONDITIONS and order_date like '2014-01%'" \
+  --split-by order_id \
+  --append
+
+# where in conjunction with table can be used to get data based up on a condition
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --target-dir /user/dgadiraju/sqoop_import/retail_db/orders \
+  --num-mappers 2 \
+  --table orders \
+  --where "order_date like '2014-02%'" \
+  --append
+
+# Incremental load using arguments specific to incremental load
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --target-dir /user/dgadiraju/sqoop_import/retail_db/orders \
+  --num-mappers 2 \
+  --table orders \
+  --check-column order_date \
+  --incremental append \
+  --last-value '2014-02-28'
+  
+  
+
+  
+  
+================================================================================================================== Simple Hive Import
+Let us see simple Hive import
+
+–hive-import will enable hive-import. It creates table if it does not already exist
+–hive-database can be used to specify the database
+Instead of –hive-database, we can use database name as a prefix as part of –hive-table
+sqoop import \
+  --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+  --username retail_user \
+  --password itversity \
+  --table order_items \
+  --hive-import \
+  --hive-database dgadiraju_sqoop_import \
+  --hive-table order_items \
+  --num-mappers 2  
+  
+ 
+Managing Tables
+Default hive import behavior
+Create table if the table does not exist
+If the table already exists, data will be appended
+–create-hive-table will fail hive import if the table already exists
+–hive-overwrite will replace existing data with a new set of data
+In case of any questions/issues, please raise it in our forums in relevant category.
+
+Check out for details of our courses Course page
+
+
+
+================================================================================================================== Sqoop Import – Import all tables
+
+Sqoop Export – Simple export with delimiters
+JUNE 30, 2018 By itversity
+
+Topic Progress:                         
+← Back to Lesson
+As part of this topic, we will run a simple export with delimiters
+
+Simple export – following are the arguments we need to pass
+--connect with JDBC connect string. It should include target database
+--username and --passwordthe user should have write permission on the table into which data is being exported
+--table, target table in the relational database such as MySQL into which data need to be copied
+--export-dir from which data need to be copied
+Delimiters
+Sqoop by default expect “,” to be a field delimiter
+But Hive default delimiter is Ascii 1 (\001)
+--input-fields-terminated-by can be used to pass the delimiting character
+Export Behavior
+Read data from the export directory
+By default, Sqoop export uses 4 parallel threads to read the data by using Map Reduce split logic (based upon HDFS block size)
+Each thread establishes database connection using JDBC URL, username and password
+Generated insert statement to load data into the target table
+Issues insert statements in the target table using connection established per thread (or mapper)
+Number of mappers – we can increase or decrease the number of threads by using –-num-mappers or -m
+Create a table in MySql
+Use database retail_export if you want to create the tables and export the data
+create table daily_revenue(
+  order_date varchar(30),
+  revenue float
+);
+view rawhive-create-daily-revenue.hql hosted with ❤ by GitHub
+Sqoop Exporting the Data
+sqoop export \
+ --connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+ --username retail_user \
+ --password itversity \
+ --export-dir /apps/hive/warehouse/dgadiraju_sqoop_import.db/daily_revenue \
+ --table daily_revenue \
+ --input-fields-terminated-by "\001"
+ 
+ 
+ 
+
+================================================================================================================== Sqoop Export – Column Mapping
+JUNE 30, 2018 By itversity
+
+Topic Progress:                         
+← Back to Lesson
+Let us see the rationale behind column mapping while exporting the data
+
+Sometimes the structure of data in HDFS and structure of the table in MySQL into which data need to be exported need not match exactly
+There is no way we can change the order of columns in our input data and we have to consume every column
+However, Sqoop export gives the flexibility to map all the columns to target table columns in the order of data in HDFS. For e.g.
+HDFS data structure – order_date and revenue
+MySQL target table – revenue, order_date and description
+There is no description in HDFS and hence description in target table should be nullable
+--columns order_date,revenuewill make sure data is populated with revenue and order_date in the target table.
+create table daily_revenue_demo (
+     revenue float,
+     order_date varchar(30),
+     description varchar(200)
+);
+view rawhive-create-daily_revenue_demo.hql hosted with ❤ by GitHub
+
+sqoop export \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--export-dir /apps/hive/warehouse/dgadiraju_sqoop_import.db/daily_revenue \
+--table daily_revenue_demo \
+--columns order_date,revenue \
+--input-fields-terminated-by "\001" \
+--num-mappers 1
+ 
+
+ 
+
+
+================================================================================================================== Sqoop Export – Update and Upsert
+JUNE 30, 2018 By itversity
+
+Topic Progress:                         
+← Back to Lesson
+As part of this topic, we will explore about Update and Upsert
+
+Exporting Data
+Update and Upsert/Merge
+create table daily_revenue (
+ order_date varchar(30) primary key,
+ revenue float
+);
+sqoop export \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--export-dir /apps/hive/warehouse/dgadiraju_sqoop_import.db/daily_revenue \
+--table daily_revenue \
+--input-fields-terminated-by "\001" \
+--num-mappers 1
+Sqoop Export – Update
+inser into table daily_revenue
+ select order_date, sum(order_item_subtotal) daily_revenue
+ from orders join order_items on
+ order_id = order_item_order_id
+ where order_date like '2013-07%'
+ group by order_date;
+Update the table
+update daily_revenue set revenue = 0;
+
+sqoop export \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--export-dir /apps/hive/warehouse/dgadiraju_sqoop_import.db/daily_revenue \
+--table daily_revenue \
+--update-key order_date \
+--input-fields-terminated-by "\001" \
+--num-mappers 1
+Upsert the table
+sqoop export \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--export-dir /apps/hive/warehouse/dgadiraju_sqoop_import.db/daily_revenue \
+--table daily_revenue \
+--update-key order_date \
+--update-mode allowinsert \
+--input-fields-terminated-by "\001" \
+--num-mappers 1
+
+
+==================================================================================================================  Sqoop Export – Stage Tables
+JUNE 30, 2018 By itversity
+
+Topic Progress:                         
+← Back to Lesson
+As part of this topic, we will explore Stage tables in Sqoop Export
+
+Exporting Data
+Stage tables
+Launch Hive and Insert the data into the table
+insert into table daily_revenue
+ select order_date, sum(order_item_subtotal) daily_revenue
+ from orders join order_items on
+ order_id = order_item_order_id
+ where order_date > '2013-08'
+ group by order_date;
+sqoop export \ 
+--connect jdbc:mysql://ms.itversity.com:3306/ retail_export \
+--username retail_user \ 
+--password itversity \ 
+--export-dir /apps/hive/warehouse/dgadiraju_sqoop_import.db/daily_revenue \ --table daily_revenue \ --input-fields-terminated-by "\001"
+Creating stage table
+create table daily_revenue_stage (
+order_date varchar(30) primary key,
+revenue float
+);
+Insert values into the table
+insert into daily_revenue values ("2014-07-01 00:00:00.0", 0);
+Run the stage table
+sqoop export \
+--connect jdbc:mysql://ms.itversity.com:3306/ retail_export \
+--username retail_user \
+--password itversity \
+--export-dir /apps/hive/warehouse/dgadiraju_sqoop_import.db/daily_revenue \ --table daily_revenue \
+--staging-table daily_revenue_stage \
+--input-fields-terminated-by "\001"
+
+
+===============================================================================================Create RDD from HDFS files
+JULY 2, 2018 By itversity
+
+Topic Progress:                                           
+← Back to Lesson
+As part of this topic, we will see how can we read the data from hdfs create RDD out of it.
+
+Reading data using SparkContext
+Data can be read from files using textFile of Spark Context object sc. Following are the operations on top of RDD that can be performed to preview the data
+
+take
+first
+count
+and more
+Create RDD using data from HDFS
+RDD is an extension to Python list
+RDD – Resilient Distributed Dataset
+In-memory
+Distributed
+Resilient
+Reading files from HDFS
+A quick overview of Transformations and Actions
+DAG and lazy evaluation
+Previewing the data using Actions
+orderItems = sc.textFile("/public/retail_db/order_items")
+type(orderItems)
+help(orderItems)
+orderItems.first()
+for i in orderItems.take(10): print(i)
+
+
+===============================================================================================Create RDD using parallelize
+Quite often we might have to read data from the local file system and then create RDD out of it to process in conjunction with other RDDs. Here are the steps to create RDD using data from files in local file system.
+
+Read data from files using Python File I/O APIs
+Create collection out of it
+Convert into RDD using sc.parallelize by passing the collection as an argument
+Now you will have data in the form of RDD which can be processed using Spark APIs
+l = range(1, 10000)
+lRDD = sc.parallelize(l)
+productsRaw = open("/data/retail_db/products/part-00000").read().splitlines()
+type(productsRaw)
+productsRDD = sc.parallelize(productsRaw)
+type(productsRDD)
+productsRDD.first()
+for i in productsRDD.take(10): print(i)
+productsRDD.count()
+
+
+===============================================================================================Reading data using SQLContext
+SQLContext have 2 APIs to read data of different file formats
+
+load – typically takes 2 arguments, path and format
+read – have an interface for each of the file formats (e.g.: read.json)
+Following are the file formats supported
+
+text
+orc
+parquet
+json (example showed)
+csv (3rd party plugin)
+avro (3rd party plugin, but Cloudera clusters get by default)
+sqlContext.load("/public/retail_db_json/order_items", "json").show()
+sqlContext.read.json("/public/retail_db_json/order_items").show()
