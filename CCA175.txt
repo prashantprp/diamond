@@ -525,3 +525,73 @@ Data Analysis - Spark SQL or HIVEQL using Spark Context
 				
 				
 				
+Creating tables and insert data
+Hive supports other file formats
+avro
+orc
+parquet
+sequencefile
+and more
+When we use special file formats, most likely
+Create staging table where structure matches data
+Create table with the format you are interested in
+Use insert command to get data from stage table into the final table
+create database dgadiraju_retail_db_orc;
+use dgadiraju_retail_db_orc;
+
+create table orders (
+  order_id int,
+  order_date string,
+  order_customer_id int,
+  order_status string
+) stored as orc;
+
+insert into table orders select * from dgadiraju_retail_db_txt.orders;
+
+create table order_items (
+  order_item_id int,
+  order_item_order_id int,
+  order_item_product_id int,
+  order_item_quantity int,
+  order_item_subtotal float,
+  order_item_product_price float
+) stored as orc;
+
+insert into table order_items select * from dgadiraju_retail_db_txt.order_items;
+
+
+Launching spark-sql. 
+
+spark-sql --master yarn --conf spark.ui.port=12567
+
+Creating tables and loading data
+Create database
+Create tables using text file format
+Make sure structure of data and the delimiters specified while create tables are same
+If so, one can load data into Hive table using load command
+create database dgadiraju_retail_db_txt;
+use dgadiraju_retail_db_txt;
+
+create table orders (
+  order_id int,
+  order_date string,
+  order_customer_id int,
+  order_status string
+) row format delimited fields terminated by ','
+stored as textfile;
+
+load data local inpath '/data/retail_db/orders' into table orders;
+
+create table order_items (
+  order_item_id int,
+  order_item_order_id int,
+  order_item_product_id int,
+  order_item_quantity int,
+  order_item_subtotal float,
+  order_item_product_price float
+) row format delimited fields terminated by ','
+stored as textfile;
+
+load data local inpath '/data/retail_db/order_items' into table order_items;
+
+
