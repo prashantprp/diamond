@@ -10,6 +10,13 @@ Password:itversity
 
 sqoop export --connect jdbc:mysql://ms.itversity.com:3306/retail_export --username retail_user --password itversity --export-dir /apps/hive/warehouse/dgadiraju_sqoop_import.db/daily_revenue --input-fields-terminated-by "\001" --table daily_revenue_prp
 
+/* convert RDD To Dataframe */ 
+revenuePerOrderIdDF=orderItemsMap.toDF(schema=["order_id","revenue"])
+/* Group by in a DataFrame */ 
+revgrouped=revenuePerOrderIdDF.groupby('order_id').agg({'revenue': 'sum'})
+
+
+
 RDD to be written back in AVRO,TEXT,JSON,PARQUET,ORC. 
 
 pyspark --master yarn --conf spark.ui.port=12888
