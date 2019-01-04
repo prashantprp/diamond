@@ -2,6 +2,8 @@ Make sure that you cast the field to the respective data type before  doing the 
 
 Be careful when you use the reduce function be careful to typecast the variable to the right value otherwise instead of addition string concatenation will happen. 
 
+Creating Data Frames and register as temp tables
+Section 7, Lecture 133 VERYIMPORTANT 
 
 
 mysql -u retail_user to connect to mysql. 
