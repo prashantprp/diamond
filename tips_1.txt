@@ -1,0 +1,198 @@
+
+
+sekhar.m
+1 
+Jun '18
+##Arun blog problems and solutions:
+##http://arun-teaches-u-tech.blogspot.com/p/cca-175-prep-problem-scenario-1.html 15
+########################
+##Problem-1’s solution #
+########################
+
+NOTE: These are not exhaustive solutions. Arun asked us to use RDD, DF and SQL to solve these. But I provided only one solution. Also these were implemented on itversity labs, and hence the input/output directories will be different from the ones asked in the question. Lastly, I tested these solutions but I am not sure if these are the correct/optimal solutions. So use at your own risk.
+
+1a. Using sqoop, import orders table into hdfs to folders /user/cloudera/problem1/orders. File should be loaded as Avro File and use snappy compression
+
+sqoop import 
+–connect jdbc:mysql://ms.itversity.com/retail_db 
+–username retail_user 
+–password itversity 
+–table orders 
+–delete-target-dir 
+–target-dir orders 
+–as-avrodatafile 
+–compress 
+–compression-codec=“org.apache.hadoop.io.compress.SnappyCodec”
+
+##Verify your work by comparing the number of imported records with the actual count
+
+sqoop eval 
+–connect jdbc:mysql://ms.itversity.com/retail_db 
+–username retail_user 
+–password itversity 
+–query “select count(*) from orders”
+
+1b. Using sqoop, import order_items table into hdfs to folders /user/cloudera/problem1/order-items. Files should be loaded as avro file and use snappy compression
+
+sqoop import 
+–connect jdbc:mysql://ms.itversity.com/retail_db 
+–username retail_user 
+–password itversity 
+–table order_items 
+–target-dir order_items 
+–delete-target-dir 
+–as-avrodatafile 
+–compress 
+–compression-codec=“org.apache.hadoop.io.compress.SnappyCodec”
+
+sqoop eval 
+–connect jdbc:mysql://ms.itversity.com/retail_db 
+–username retail_user 
+–password itversity 
+–query “select count(*) from order_items”
+
+Using Spark Scala load data at /user/cloudera/problem1/orders and /user/cloudera/problem1/orders-items items as dataframes.
+orders_df = sqlContext.load(“orders”,“com.databricks.spark.avro”)
+orders_df.show(3) # will display:
+±-------±------------±----------------±--------------+
+|order_id| order_date|order_customer_id| order_status|
+±-------±------------±----------------±--------------+
+| 1|1374724800000| 11599| CLOSED|
+| 2|1374724800000| 256|PENDING_PAYMENT|
+| 3|1374724800000| 12111| COMPLETE|
+±-------±------------±----------------±--------------+
+
+order_items = sqlContext.load(“order_items”,“com.databricks.spark.avro”)
+
+order_items.show(3) #will display:
+±------------±------------------±--------------------±------------------±------------------±-----------------------+
+|order_item_id|order_item_order_id|order_item_product_id|order_item_quantity|order_item_subtotal|order_item_product_price|
+±------------±------------------±--------------------±------------------±------------------±-----------------------+
+| 1| 1| 957| 1| 299.98| 299.98|
+| 2| 2| 1073| 1| 199.99| 199.99|
+| 3| 2| 502| 5| 250.0| 50.0|
+±------------±------------------±--------------------±------------------±------------------±-----------------------+
+
+Expected Intermediate Result: Order_Date , Order_status, total_orders, total_amount. In plain english, please find total orders and total amount per status per day. The result should be sorted by order date in descending, order status in ascending and total amount in descending and total orders in ascending. Aggregation should be done using below methods. However, sorting can be done using a dataframe or RDD. Perform aggregation in each of the following ways
+a). Just by using Data Frames API - here order_date should be YYYY-MM-DD format
+
+orders_df.registerTempTable(“orders_df”)
+order_items.registerTempTable(“order_items_df”)
+
+##In the following statement, we need to divide the unixtimestamp value with 1000, to avoid the inclusion of micro seconds
+
+final_df = sqlContext.sql(""" 
+SELECT from_unixtime(a.order_date/1000, ‘yyyy-MM-dd’) as Order_Date,
+a.order_status Order_status, 
+count(*) as total_orders,
+sum(b.order_item_subtotal) as total_amount 
+from orders_df a, order_items_df b 
+where a.order_id = b.order_item_order_id 
+group by Order_Date, Order_status 
+order by Order_Date asc, total_amount desc 
+“”")
+
+final_df.show(5)
+
+Using Spark Scala load data at /user/cloudera/problem1/orders and /user/cloudera/problem1/orders-items items as dataframes.
+orders_df = sqlContext.load(“orders”,“com.databricks.spark.avro”)
+orders_df.show(3) # will display:
+±-------±------------±----------------±--------------+
+|order_id| order_date|order_customer_id| order_status|
+±-------±------------±----------------±--------------+
+| 1|1374724800000| 11599| CLOSED|
+| 2|1374724800000| 256|PENDING_PAYMENT|
+| 3|1374724800000| 12111| COMPLETE|
+±-------±------------±----------------±--------------+
+
+order_items = sqlContext.load(“order_items”,“com.databricks.spark.avro”)
+
+order_items.show(3) #will display:
+±------------±------------------±--------------------±------------------±------------------±-----------------------+
+|order_item_id|order_item_order_id|order_item_product_id|order_item_quantity|order_item_subtotal|order_item_product_price|
+±------------±------------------±--------------------±------------------±------------------±-----------------------+
+| 1| 1| 957| 1| 299.98| 299.98|
+| 2| 2| 1073| 1| 199.99| 199.99|
+| 3| 2| 502| 5| 250.0| 50.0|
+±------------±------------------±--------------------±------------------±------------------±-----------------------+
+
+Expected Intermediate Result: Order_Date , Order_status, total_orders, total_amount. In plain english, please find total orders and total amount per status per day. The result should be sorted by order date in descending, order status in ascending and total amount in descending and total orders in ascending. Aggregation should be done using below methods. However, sorting can be done using a dataframe or RDD. Perform aggregation in each of the following ways
+a). Just by using Data Frames API - here order_date should be YYYY-MM-DD format
+
+orders_df.registerTempTable(“orders_df”)
+order_items.registerTempTable(“order_items_df”)
+
+##In the following statement, we need to divide the unixtimestamp value with 1000, to avoid the inclusion of micro seconds
+
+final_df = sqlContext.sql(""" 
+SELECT from_unixtime(a.order_date/1000, ‘yyyy-MM-dd’) as Order_Date,
+a.order_status Order_status, 
+count(*) as total_orders,
+sum(b.order_item_subtotal) as total_amount 
+from orders_df a, order_items_df b 
+where a.order_id = b.order_item_order_id 
+group by Order_Date, Order_status 
+order by Order_Date asc, total_amount desc 
+“”")
+
+final_df.show(5)
+
+b). Using Spark SQL - here order_date should be YYYY-MM-DD format
+c). By using combineByKey function on RDDS – No need of formatting order_date or total_amount
+
+Store the result as parquet file into hdfs using gzip compression under folder
+/user/cloudera/problem1/result4a-gzip
+/user/cloudera/problem1/result4b-gzip
+/user/cloudera/problem1/result4c-gzip
+
+##Answer:
+sqlContext.setConf(“spark.sql.parquet.compression.codec”,“gzip”)
+final_df.rdd.coalesce(3).toDF().write.parquet(“problem1”,mode=“overwrite”)
+
+Store the result as parquet file into hdfs using snappy compression under folder
+/user/cloudera/problem1/result4a-snappy
+/user/cloudera/problem1/result4b-snappy
+/user/cloudera/problem1/result4c-snappy
+##Answer
+sqlContext.setConf(“spark.sql.parquet.compression.codec”,“snappy”)
+final_df.rdd.coalesce(3).toDF().write.parquet(“problem1”,mode=“append”)
+
+Store the result as CSV file into hdfs using No compression under folder
+/user/cloudera/problem1/result4a-csv
+/user/cloudera/problem1/result4b-csv
+/user/cloudera/problem1/result4c-csv
+
+##Answer:
+rdd_final = final_df.rdd.map(lambda x: “,”.join([x.Order_Date,x.Order_status,str(x.total_orders),str(x.total_amount)]))
+
+#You cannot save the above RDD to problem1 folder, and I am not sure how to append to problem1 files. So saving to problem2 directory and then move them to problem1
+
+rdd_final.coalesce(3).saveAsTextFile(“problem2”,compressionCodecClass=None)
+
+hdfs dfs -mv problem2/* problem1/
+
+create a mysql table named result and load data from /user/cloudera/problem1/result4a-csv to mysql table named result
+
+sqoop list-databases 
+–connect jdbc:mysql://ms.itversity.com 
+–username retail_user 
+–password itversity \
+
+sqoop eval 
+–connect jdbc:mysql://ms.itversity.com/retail_export 
+–username retail_user 
+–password itversity 
+–query “CREATE TABLE retail_export.sekhar_orders_1(order_date date, order_status varchar(20), total_orders bigint, total_amount double)”
+
+sqoop export 
+–connect jdbc:mysql://ms.itversity.com/retail_export 
+–username retail_user 
+–password itversity 
+–table sekhar_orders_1 
+–export-dir “/user/sekharmekala/problem1/part-0*”
+
+sqoop eval 
+–connect jdbc:mysql://ms.itversity.com/retail_export 
+–username retail_user 
+–password itversity 
+–query “select * from sekhar_orders_1 limit 10”
