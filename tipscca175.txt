@@ -5,6 +5,7 @@ Be careful when you use the reduce function be careful to typecast the variable 
 Creating Data Frames and register as temp tables
 Section 7, Lecture 133 VERYIMPORTANT 
 
+http://discuss.itversity.com/t/cca175-advice-direction/12576/8 -- VERY VERY IMPORTANT
 
 mysql -u retail_user to connect to mysql. 
 
