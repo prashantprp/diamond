@@ -1,3 +1,7 @@
+/user/prashantpr/problem1/text1/part-r-00001-496f7a28-a352-4924-9019-10553b1b2fe1
+
+oidf.alias("oidf1").selectExpr("concat_ws('@',oidf1.*)").write.text("/user/prashantpr/problem1/text1")
+
 Make sure that you cast the field to the respective data type before  doing the comparison for the filter.
 
 Be careful when you use the reduce function be careful to typecast the variable to the right value otherwise instead of addition string concatenation will happen. 
