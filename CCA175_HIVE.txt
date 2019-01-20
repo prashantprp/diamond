@@ -5,3 +5,8 @@ order_customer_id int,
 order_status string
 ) row format delimited fields terminated by ','
 stored as textfile;
+
+
+load data local inpath '/tmp/file1.txt'  into/overwrite table orders -- for copying from local file system. 
+
+load data local '/tmp/file1.txt'  into/overwrite table orders -- for copying from hadoop file system. 
