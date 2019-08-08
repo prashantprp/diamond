@@ -1,0 +1,21 @@
+SELECT
+    emplid,
+    empl_rcd,
+    effdt effective_start_date,
+    (
+        SELECT
+            MIN(enddt.effdt)
+        FROM
+            ps_job enddt
+        WHERE
+                enddt.emplid = job.emplid
+            AND
+                enddt.empl_rcd = job.empl_rcd
+            AND
+                enddt.effdt > job.effdt
+    ) effective_end_date
+FROM
+    ps_job job
+WHERE
+    job.emplid = 'XXXXXXXX'
+

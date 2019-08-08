@@ -1,0 +1,599 @@
+SELECT
+    tab.assignment_id,
+    tab.evt_eff_start_date,
+    tab.worker_last_active_date,
+    tab.effective_start_date,
+    tab.effective_end_date,
+    TO_DATE('2004-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'),
+    tab.cal_month_start_dt,
+    tab.cal_month_end_dt,
+    tab.cal_qtr,
+    tab.cal_year,
+    tab.last_month_cal_qtr_flg,
+    tab.last_month_cal_year_flg,
+    tab.change_event_type,
+    tab.max_seq_ind,
+    tab.event_seq,
+    tab.event_year,
+    tab.assignment_number,
+    tab.event_dt_wid,
+    tab.event_month_wid,
+        CASE
+            WHEN emp.row_wid IS NULL THEN tab.employee_wid
+            ELSE emp.row_wid
+        END
+    employee_wid,
+        CASE
+            WHEN org.row_wid IS NULL THEN tab.hr_org_wid
+            ELSE org.row_wid
+        END
+    hr_org_wid,
+        CASE
+            WHEN org_prv.row_wid IS NULL THEN tab.hr_org_prv_wid
+            ELSE org_prv.row_wid
+        END
+    hr_org_prv_wid,
+        CASE
+            WHEN job.row_wid IS NULL THEN tab.job_wid
+            ELSE job.row_wid
+        END
+    job_wid,
+        CASE
+            WHEN job_prv.row_wid IS NULL THEN tab.job_prv_wid
+            ELSE job_prv.row_wid
+        END
+    job_prv_wid,
+        CASE
+            WHEN grd.row_wid IS NULL THEN 0
+            ELSE grd.row_wid
+        END
+    pay_grade_wid,
+        CASE
+            WHEN grd_prv.row_wid IS NULL THEN 0
+            ELSE grd_prv.row_wid
+        END
+    pay_grade_prv_wid,
+        CASE
+            WHEN pos.row_wid IS NULL THEN tab.hr_position_wid
+            ELSE pos.row_wid
+        END
+    hr_position_wid,
+        CASE
+            WHEN pos_prv.row_wid IS NULL THEN tab.hr_position_prv_wid
+            ELSE pos_prv.row_wid
+        END
+    hr_position_prv_wid,
+        CASE
+            WHEN loc.row_wid IS NULL THEN tab.location_wid
+            ELSE loc.row_wid
+        END
+    location_wid,
+        CASE
+            WHEN loc_prv.row_wid IS NULL THEN tab.location_prv_wid
+            ELSE loc_prv.row_wid
+        END
+    location_prv_wid,
+        CASE
+            WHEN sup.row_wid IS NULL THEN tab.supervisor_wid
+            ELSE sup.row_wid
+        END
+    supervisor_wid,
+        CASE
+            WHEN sup_prv.row_wid IS NULL THEN tab.supervisor_prv_wid
+            ELSE sup_prv.row_wid
+        END
+    supervisor_prv_wid,
+    tab.employment_wid,
+        CASE
+            WHEN bus.row_wid IS NULL THEN tab.hr_business_unit_wid
+            ELSE bus.row_wid
+        END
+    hr_business_unit_wid,
+        CASE
+            WHEN cmp.row_wid IS NULL THEN tab.company_org_wid
+            ELSE cmp.row_wid
+        END
+    company_org_wid,
+    0,
+    tab.postn_dh_base_emp_id,
+    tab.intl_assgn_wid,
+    tab.age_band_wid,
+    tab.performance_band_wid,
+    tab.prd_of_wrk_band_wid,
+    tab.hire_dt,
+    tab.last_hire_dt,
+    tab.pow_start_dt,
+    tab.birth_dt,
+    tab.org_entry_dt,
+    tab.job_entry_dt,
+    tab.grd_entry_dt,
+    tab.pos_entry_dt,
+    tab.last_prom_dt,
+    tab.last_sal_incr_dt,
+    tab.headcount,
+    tab.fte,
+    tab.salary_annl,
+    tab.salary_month,
+    tab.salary_day,
+    tab.salary_hour,
+    tab.total_service_days,
+    tab.nrmlsd_perf_rating,
+    tab.orig_perf_rating,
+    tab.std_hours_month,
+    tab.iasg_allctn_factor,
+    tab.emp_ind,
+    tab.cwk_ind,
+    tab.manager_role_ind,
+    tab.supervisor_ind,
+    0 first_record_ind,
+    0 hire_event_ind,
+    0 rehire_event_ind,
+    0 term_event_ind,
+    0 asg_start_event_ind,
+    0 asg_end_event_ind,
+    0 prom_event_ind,
+    0 org_change_ind,
+    0 job_change_ind,
+    0 pos_change_ind,
+    0 grd_change_ind,
+    0 loc_change_ind,
+    0 sup_change_ind,
+    0 sal_change_ind,
+    0 pfrt_change_ind,
+    0 hdc_gain_ind,
+    0 hdc_loss_ind,
+    0 fte_gain_ind,
+    0 fte_loss_ind,
+    tab.term_status_ind,
+    tab.home_assignment_id,
+    tab.delete_flg,
+    tab.reject_flg,
+    tab.doc_curr_code,
+    tab.loc_curr_code,
+    tab.loc_exch_rate_type,
+    tab.loc_exchange_rate,
+    tab.exchange_dt,
+    tab.created_on_dt,
+    tab.changed_on_dt,
+    tab.aux1_changed_on_dt,
+    tab.aux2_changed_on_dt,
+    tab.aux3_changed_on_dt,
+    tab.aux4_changed_on_dt,
+    tab.datasource_num_id,
+    tab.integration_id,
+    tab.tenant_id,
+    tab.x_custom,
+    tab.etl_proc_wid,
+    tab.created_by_wid,
+    tab.changed_by_wid,
+    tab.global1_exchange_rate,
+    tab.global2_exchange_rate,
+    tab.global3_exchange_rate,
+    tab.x_accountability_hierarchy_wid,
+    tab.x_ahs_functional_string_wid
+FROM
+    (
+        SELECT
+            fct.assignment_id,
+            fct.effective_start_date evt_eff_start_date,
+            cal.cal_month_start_dt worker_last_active_date,
+            cal.cal_month_start_dt effective_start_date,
+                CASE
+                    WHEN fct.effective_end_date < cal.cal_month_end_dt THEN fct.effective_end_date
+                    ELSE cal_month_end_dt
+                END
+            effective_end_date,
+            cal.cal_month_start_dt,
+            cal.cal_month_end_dt,
+            cal.cal_qtr,
+            cal.cal_year,
+            cal.last_month_cal_qtr_flg,
+            cal.last_month_cal_year_flg,
+            'SNAPSHOT' AS change_event_type,
+            fct.max_seq_ind,
+            fct.event_seq,
+            fct.event_year,
+            fct.assignment_number,
+            fct.event_dt_wid,
+            cal.row_wid event_month_wid,
+            fct.employee_wid,
+            fct.hr_org_wid,
+            fct.hr_org_prv_wid,
+            fct.job_wid,
+            fct.job_prv_wid,
+            fct.hr_position_wid,
+            fct.hr_position_prv_wid,
+            fct.location_wid,
+            fct.location_prv_wid,
+            fct.supervisor_wid,
+            fct.supervisor_prv_wid,
+            fct.hr_business_unit_wid,
+            fct.company_org_wid,
+            fct.employment_wid,
+            fct.postn_dh_base_emp_id,
+            fct.intl_assgn_wid,
+            fct.age_band_wid,
+            fct.performance_band_wid,
+            fct.prd_of_wrk_band_wid,
+            fct.hire_dt,
+            fct.last_hire_dt,
+            fct.pow_start_dt,
+            fct.birth_dt,
+            fct.org_entry_dt,
+            fct.job_entry_dt,
+            fct.grd_entry_dt,
+            fct.pos_entry_dt,
+            fct.last_prom_dt,
+            fct.last_sal_incr_dt,
+            fct.headcount,
+            fct.fte,
+            fct.salary_annl,
+            fct.salary_month,
+            fct.salary_day,
+            fct.salary_hour,
+            fct.total_service_days,
+            fct.nrmlsd_perf_rating,
+            fct.orig_perf_rating,
+            fct.std_hours_month,
+            fct.iasg_allctn_factor,
+            fct.emp_ind,
+            fct.cwk_ind,
+            fct.manager_role_ind,
+            fct.supervisor_ind,
+            fct.term_status_ind,
+            fct.home_assignment_id,
+            fct.delete_flg,
+            fct.reject_flg,
+            fct.doc_curr_code,
+            fct.loc_curr_code,
+            fct.loc_exch_rate_type,
+            fct.loc_exchange_rate,
+            fct.exchange_dt,
+            fct.created_on_dt,
+            fct.changed_on_dt,
+            fct.aux1_changed_on_dt,
+            fct.aux2_changed_on_dt,
+            fct.aux3_changed_on_dt,
+            fct.aux4_changed_on_dt,
+            fct.datasource_num_id,
+            fct.integration_id,
+            fct.tenant_id,
+            fct.x_custom,
+            fct.etl_proc_wid,
+            fct.created_by_wid,
+            fct.changed_by_wid,
+            fct.global1_exchange_rate,
+            fct.global2_exchange_rate,
+            fct.global3_exchange_rate,
+            fct.employee_id,
+            fct.hr_org_id,
+            fct.hr_org_prv_id,
+            fct.job_id,
+            fct.job_prv_id,
+            fct.pay_grade_id,
+            fct.pay_grade_prv_id,
+            fct.hr_position_id,
+            fct.hr_position_prv_id,
+            fct.location_id,
+            fct.location_prv_id,
+            fct.supervisor_id,
+            fct.supervisor_prv_id,
+            fct.hr_business_unit_id,
+            fct.company_org_id,
+            fct.x_accountability_hierarchy_wid,
+            fct.x_ahs_functional_string_wid
+        FROM
+            w_wrkfc_evt_merge_f fct,
+            w_month_d cal
+        WHERE
+                fct.effective_end_date >= TO_DATE('2004-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
+            AND
+                cal.cal_month_start_dt >= TO_DATE('2004-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
+            AND
+                cal.half_ago_wid <= ( 20190803.000000000000000 / 100 )
+            AND
+                fct.max_seq_ind = 1
+            AND
+                fct.term_status_ind = 0
+  --and CAL.row_wid between to_number(to_char(FCT.EFFECTIVE_START_DATE,'YYYYMM')) and to_number(to_char(FCT.EFFECTIVE_end_DATE,'YYYYMM'))-1
+            AND
+                fct.effective_start_date < cal.cal_month_start_dt
+            AND
+                cal.cal_month_start_dt <= fct.effective_end_date
+    ) tab
+    LEFT OUTER JOIN (
+        SELECT
+            x.integration_id,
+            x.datasource_num_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.row_wid
+        FROM
+            w_employee_d x
+        WHERE
+            'N' = 'Y'
+    ) emp ON (
+            emp.integration_id = tab.employee_id
+        AND
+            emp.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= emp.effective_from_dt
+        AND
+            tab.effective_start_date < emp.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.integration_id,
+            x.datasource_num_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.row_wid
+        FROM
+            w_int_org_d x
+        WHERE
+            'N' = 'Y'
+    ) org ON (
+            org.integration_id = tab.hr_org_id
+        AND
+            org.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= org.effective_from_dt
+        AND
+            tab.effective_start_date < org.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.integration_id,
+            x.datasource_num_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.row_wid
+        FROM
+            w_int_org_d x
+        WHERE
+            'N' = 'Y'
+    ) org_prv ON (
+            org_prv.integration_id = tab.hr_org_prv_id
+        AND
+            org_prv.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= org_prv.effective_from_dt
+        AND
+            tab.effective_start_date < org_prv.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.integration_id,
+            x.datasource_num_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.row_wid
+        FROM
+            w_job_d x
+        WHERE
+            'N' = 'Y'
+    ) job ON (
+            job.integration_id = tab.job_id
+        AND
+            job.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= job.effective_from_dt
+        AND
+            tab.effective_start_date < job.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.integration_id,
+            x.datasource_num_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.row_wid
+        FROM
+            w_job_d x
+        WHERE
+            'N' = 'Y'
+    ) job_prv ON (
+            job_prv.integration_id = tab.job_prv_id
+        AND
+            job_prv.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= job_prv.effective_from_dt
+        AND
+            tab.effective_start_date < job_prv.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.row_wid,
+            x.integration_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.datasource_num_id
+        FROM
+            w_pay_grade_d x
+    ) grd ON (
+            grd.integration_id = tab.pay_grade_id
+        AND
+            grd.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= grd.effective_from_dt
+        AND
+            tab.effective_start_date < grd.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.row_wid,
+            x.integration_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.datasource_num_id
+        FROM
+            w_pay_grade_d x
+    ) grd_prv ON (
+            grd_prv.integration_id = tab.pay_grade_prv_id
+        AND
+            grd_prv.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= grd_prv.effective_from_dt
+        AND
+            tab.effective_start_date < grd_prv.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.integration_id,
+            x.datasource_num_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.row_wid
+        FROM
+            w_hr_position_d x
+        WHERE
+            'N' = 'Y'
+    ) pos ON (
+            pos.integration_id = tab.hr_position_id
+        AND
+            pos.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= pos.effective_from_dt
+        AND
+            tab.effective_start_date < pos.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.integration_id,
+            x.datasource_num_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.row_wid
+        FROM
+            w_hr_position_d x
+        WHERE
+            'N' = 'Y'
+    ) pos_prv ON (
+            pos_prv.integration_id = tab.hr_position_prv_id
+        AND
+            pos_prv.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= pos_prv.effective_from_dt
+        AND
+            tab.effective_start_date < pos_prv.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.integration_id,
+            x.datasource_num_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.row_wid
+        FROM
+            w_busn_location_d x
+        WHERE
+            'N' = 'Y'
+    ) loc ON (
+            loc.integration_id = tab.location_id
+        AND
+            loc.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= loc.effective_from_dt
+        AND
+            tab.effective_start_date < loc.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.integration_id,
+            x.datasource_num_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.row_wid
+        FROM
+            w_busn_location_d x
+        WHERE
+            'N' = 'Y'
+    ) loc_prv ON (
+            loc_prv.integration_id = tab.location_prv_id
+        AND
+            loc_prv.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= loc_prv.effective_from_dt
+        AND
+            tab.effective_start_date < loc_prv.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.integration_id,
+            x.datasource_num_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.row_wid
+        FROM
+            w_employee_d x
+        WHERE
+            'N' = 'Y'
+    ) sup ON (
+            sup.integration_id = tab.supervisor_id
+        AND
+            sup.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= sup.effective_from_dt
+        AND
+            tab.effective_start_date < sup.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.integration_id,
+            x.datasource_num_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.row_wid
+        FROM
+            w_employee_d x
+        WHERE
+            'N' = 'Y'
+    ) sup_prv ON (
+            sup_prv.integration_id = tab.supervisor_prv_id
+        AND
+            sup_prv.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= sup_prv.effective_from_dt
+        AND
+            tab.effective_start_date < sup_prv.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.integration_id,
+            x.datasource_num_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.row_wid
+        FROM
+            w_int_org_d x
+        WHERE
+            'N' = 'Y'
+    ) bus ON (
+            bus.integration_id = tab.hr_business_unit_id
+        AND
+            bus.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= bus.effective_from_dt
+        AND
+            tab.effective_start_date < bus.effective_to_dt
+    )
+    LEFT OUTER JOIN (
+        SELECT
+            x.integration_id,
+            x.datasource_num_id,
+            x.effective_from_dt,
+            x.effective_to_dt,
+            x.row_wid
+        FROM
+            w_int_org_d x
+        WHERE
+            'N' = 'Y'
+    ) cmp ON (
+            cmp.integration_id = tab.company_org_id
+        AND
+            cmp.datasource_num_id = tab.datasource_num_id
+        AND
+            tab.effective_start_date >= cmp.effective_from_dt
+        AND
+            tab.effective_start_date < cmp.effective_to_dt
+    )
