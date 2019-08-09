@@ -1,0 +1,36 @@
+SELECT
+    a.emplid,
+    row_wid,
+    startmonth,
+    endmonth,
+        CASE
+            WHEN a.endmonth < mth.row_wid THEN a.endmonth
+            ELSE mth.row_wid
+        END
+     vmonth
+FROM
+    (
+        SELECT
+            job.emplid,
+            to_number(TO_CHAR(job.effdt,'yyyymm')) startmonth,
+            LEAD(
+                to_number(TO_CHAR(effdt,'yyyymm'))
+            ) OVER(PARTITION BY
+                emplid
+                ORDER BY TO_CHAR(effdt,'yyyymm')
+            ) endmonth,
+            1 head_count
+        FROM
+            ps_job@sit3.world job
+        WHERE
+                job.emplid = '00052647'
+            AND
+                job.effdt >= TO_DATE('2004-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
+    ) a,
+    w_month_d mth
+WHERE
+        mth.cal_month_start_dt >= TO_DATE('2004-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
+    AND
+        a.startmonth < mth.row_wid
+    AND
+          mth.row_wid  < a.endmonth
