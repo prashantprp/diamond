@@ -1,0 +1,11 @@
+
+
+def fillNullWithValueprp(data, element, method, value):
+  if method == 'mode': 
+    data_noNull = data.where(data[element].isNotNull())
+    mode        = data_noNull.select(element).toPandas().mode(axis=0)
+    vmode = mode.iloc[[0][0]].astype(float).values[0]
+    data = data.fillna( {element:vmode})
+  elif method == 'value':
+    data = data.fillna( {element: value} )
+  return data
